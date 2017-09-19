@@ -84,7 +84,12 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
-		FileSystem fs = FileSystem.get(new Configuration());
+
+		// pickup config files off classpath
+		Configuration conf = new Configuration();
+		conf.addResource(new Path("/etc/hadoop/conf/core-site.xml"));
+				
+		FileSystem fs = FileSystem.get(conf);
 		
 		//TODO: Parse Command Line or Configuration Files here
 		

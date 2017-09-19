@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+<hadoop>
+	<core-site>/etc/hadoop/conf/core-site.xml</core-site>
+</hadoop>
 <pathlist>
-	<path>file:///home/suhail/eclipse-workspace/</path>
-	<path>file:///home/suhail/eclipse/</path>
+	<path>hdfs://quickstart.cloudera:8020/user</path>
 </pathlist>
 <exclusions>
 	<exclude>(.*)(/\.)(.*)</exclude>

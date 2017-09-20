@@ -4,7 +4,7 @@
 	<core-site>/etc/hadoop/conf/core-site.xml</core-site>
 </hadoop>
 <pathlist>
-	<path>hdfs://quickstart.cloudera:8020/user</path>
+	<path>file:///home/suhail/eclipse-workspace/</path>
 </pathlist>
 <exclusions>
 	<exclude>(.*)(/\.)(.*)</exclude>

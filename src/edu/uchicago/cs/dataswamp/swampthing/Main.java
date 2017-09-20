@@ -3,7 +3,6 @@ package edu.uchicago.cs.dataswamp.swampthing;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,6 +19,10 @@ import org.apache.hadoop.fs.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 
 public class Main {
 	
@@ -71,17 +74,6 @@ public class Main {
 
 	}
 	
-	public static boolean checkStringMatch(String line, List<Pattern> patternList)
-	{
-		//TODO: Compile out of band to make it more efficient
-		for(Pattern pattern: patternList)
-		{
-			Matcher m = pattern.matcher(line);
-			if(m.find())
-				return true;
-		}
-		return false;
-	}
 
 	public static void main(String[] args) throws Exception {
 
@@ -97,19 +89,11 @@ public class Main {
 		List<Pattern> patterns = createPatternArray("config.xml");
 		List<Path> paths = createPathArray("config.xml");
 		
-
-		for(Path path : paths)
-		{
-			// the second boolean parameter here sets the recursion to true
-			RemoteIterator<LocatedFileStatus> fileStatusListIterator = fs.listFiles(path, true);
-			while (fileStatusListIterator.hasNext()) {
-				LocatedFileStatus fileStatus = fileStatusListIterator.next();
-				// do stuff with the file like ...
-				String fullPath = fileStatus.getPath().toString();
-				if(!checkStringMatch(fullPath, patterns))
-					System.out.println(fullPath);
-			}
-		}
+		Crawler crawler = new Crawler(fs, paths, patterns);
+		crawler.startCrawl();
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		System.out.println(gson.toJson(crawler.getDiscoveredItems()));
 
 	}
 

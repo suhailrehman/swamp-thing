@@ -15,7 +15,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 
 
-@Entity(name = "crawled-item")
+@Entity(name = "crawled_item")
 public class CrawledItem {
 	
     public static final long HEADER_SIZE = 4096L;
@@ -25,8 +25,8 @@ public class CrawledItem {
 	private String path;
 	private long file_size;
 	private boolean is_directory;
-	private String owner;
-	private String group;
+	private String owner_name;
+	private String group_name;
 	private long modification_time;
 	private String fs_scheme;
 	private String fs_uri;
@@ -42,6 +42,13 @@ public class CrawledItem {
         IOUtils.copyBytes(is, os, size, true);
 	}
 	
+	
+	public CrawledItem() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
 	public CrawledItem(FileSystem fs, LocatedFileStatus filestatus, String header_path_prefix)
 	{
 		super();
@@ -49,8 +56,8 @@ public class CrawledItem {
 		this.path = filestatus.getPath().toString();
 		this.file_size = filestatus.getLen();
 		this.is_directory = filestatus.isDirectory();
-		this.owner = filestatus.getOwner();
-		this.group = filestatus.getGroup();
+		this.owner_name = filestatus.getOwner();
+		this.group_name = filestatus.getGroup();
 		this.modification_time = filestatus.getModificationTime();
 		this.fs_scheme = fs.getScheme();
 		this.fs_uri = fs.getUri().toString();
@@ -91,13 +98,13 @@ public class CrawledItem {
 	}
 
 
-	public String getOwner() {
-		return owner;
+	public String getOwner_name() {
+		return owner_name;
 	}
 
 
-	public String getGroup() {
-		return group;
+	public String getGroup_name() {
+		return group_name;
 	}
 
 
@@ -124,7 +131,7 @@ public class CrawledItem {
 	@Override
 	public String toString() {
 		return "CrawledItem [uuid=" + uuid + ", path=" + path + ", file_size=" + file_size + ", is_directory="
-				+ is_directory + ", owner=" + owner + ", group=" + group + ", modification_time=" + modification_time
+				+ is_directory + ", owner=" + owner_name + ", group=" + group_name + ", modification_time=" + modification_time
 				+ ", fs_scheme=" + fs_scheme + ", fs_uri=" + fs_uri + ", header_path=" + header_path + "]";
 	}
 	

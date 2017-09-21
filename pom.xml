@@ -1,67 +1,82 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>edu.uchicago.cs.dataswamp</groupId>
-  <artifactId>swamp-thing</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <repositories>
-    <repository>
-      <id>cloudera</id>
-      <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-    </repository>
-  </repositories>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.apache.hadoop</groupId>
-  		<artifactId>hadoop-common</artifactId>
-  		<version>2.6.0-cdh5.10.2</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.hadoop</groupId>
-  		<artifactId>hadoop-hdfs</artifactId>
-  		<version>2.6.0-cdh5.10.2</version>
-  	</dependency>
-  	<!-- https://mvnrepository.com/artifact/org.hibernate.javax.persistence/hibernate-jpa-2.1-api 
-<dependency>
-    <groupId>org.hibernate.javax.persistence</groupId>
-    <artifactId>hibernate-jpa-2.1-api</artifactId>
-    <version>1.0.0.Final</version>
-</dependency>-->
-<dependency>
-  <groupId>org.hibernate</groupId>
-  <artifactId>hibernate-entitymanager</artifactId>
-  <version>4.3.6.Final</version>
-</dependency>
-<dependency>
-    <groupId>org.xerial</groupId>
-    <artifactId>sqlite-jdbc</artifactId>
-    <version>3.20.0</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-   <groupId>net.kemitix</groupId>
-   <artifactId>sqlite-dialect</artifactId>
-   <version>0.1.0</version>
-</dependency>  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.uchicago.cs.dataswamp</groupId>
+	<artifactId>swamp-thing</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>edu.uchicago.cs.dataswamp.swampthing.Main</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>src/resources</directory>
+				<targetPath>${project.build.directory}/classes</targetPath>
+			</resource>
+			<resource>
+				<directory>src/META-INF</directory>
+				<targetPath>${project.build.directory}/classes/META-INF</targetPath>
+			</resource>
+		</resources>
+	</build>
+	<repositories>
+		<repository>
+			<id>cloudera</id>
+			<url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-common</artifactId>
+			<version>2.6.0-cdh5.10.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-hdfs</artifactId>
+			<version>2.6.0-cdh5.10.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.2.11.Final</version>
+		</dependency>
+ 		
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.20.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.2</version>
+			<scope>compile</scope>
+		</dependency>
 
-<dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.8.2</version>
-      <scope>compile</scope>
-    </dependency>
-
-  </dependencies>
+	</dependencies>
 </project>

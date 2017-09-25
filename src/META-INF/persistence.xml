@@ -9,8 +9,9 @@
       <properties>
         <property name="javax.persistence.jdbc.driver" value="org.sqlite.JDBC" />
         <property name="javax.persistence.jdbc.url" value="jdbc:sqlite:/tmp/test.db" />
-        <property name="eclipselink.logging.level" value="ALL" />
         <property name="eclipselink.ddl-generation" value="create-tables" />
+        <property name="eclipselink.logging.logger" value="org.eclipse.persistence.logging.CommonsLoggingSessionLog"/>
+        <property name="eclipselink.logging.level" value="info" />
       </properties>
     </persistence-unit>
  </persistence>

@@ -1,0 +1,8 @@
+org/eclipse/persistence/logging/FastLogFormatter.class
+org/eclipse/persistence/logging/CommonsLoggingSessionLog.class
+org/eclipse/persistence/logging/CommonsLoggingSessionLog$1.class
+org/eclipse/persistence/logging/CommonsLoggingSessionLog$LogWrapper.class
+edu/uchicago/cs/dataswamp/swampthing/Main.class
+edu/uchicago/cs/dataswamp/swampthing/App.class
+edu/uchicago/cs/dataswamp/swampthing/CrawledItem.class
+edu/uchicago/cs/dataswamp/swampthing/Crawler.class

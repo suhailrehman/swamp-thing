@@ -15,7 +15,19 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from rest_framework.routers import DefaultRouter
+from lake.views import LakeViewSet, CrawlJobSpecViewSet
+from lake.views import CrawlJobViewSet, CrawledItemViewSet
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
+
+router = DefaultRouter()
+router.register(prefix='lakes', viewset=LakeViewSet)
+router.register(prefix='crawljobspecs', viewset=CrawlJobSpecViewSet)
+router.register(prefix='crawljobs', viewset=CrawlJobViewSet)
+router.register(prefix='crawleditems', viewset=CrawledItemViewSet)
+
+urlpatterns = router.urls

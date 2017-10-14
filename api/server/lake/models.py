@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import URLValidator
 import config.settings as settings
 import uuid
 
@@ -16,26 +17,29 @@ class CrawlJobSpec(models.Model):
     uuid = models.UUIDField(primary_key=True,
                             default=uuid.uuid4, editable=False)
     lake = models.ForeignKey(Lake, related_name='specs')
-    root_uri = models.URLField(max_length=settings.MAX_PATH_LEN)
+    root_uri = models.CharField(max_length=settings.MAX_PATH_LEN)
+    # TODO: URI Validation
+    '''root_uri = models.URLField(max_length=settings.MAX_PATH_LEN,
+                               validators=[URLValidator(schemes=['hdfs', 's3'])])
+    '''
     exclusion_patterns = models.CharField(max_length=settings.REGEX_LEN)
     crawl_depth = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.uuid + " (Lake: " + str(self.lake.name) + ")"
+        return str(self.uuid) + " (Lake: " + str(self.lake.name) + ")"
 
 
 class CrawlJob(models.Model):
     uuid = models.UUIDField(primary_key=True,
                             default=uuid.uuid4, editable=False)
-    lake = models.ForeignKey(Lake, related_name='jobs')
     spec = models.ForeignKey(CrawlJobSpec)
-    start_time = models.DateTimeField(auto_now_add=True)
+    start_time = models.DateTimeField()
     running = models.BooleanField(default=False)
 
 
 class CrawledItem(models.Model):
     lake = models.ForeignKey(Lake, related_name='items')
-    path = models.URLField(max_length=settings.MAX_PATH_LEN)
+    path = models.CharField(max_length=settings.MAX_PATH_LEN)
     directory = models.BooleanField(default=False)
     size = models.PositiveIntegerField(default=0)
     last_modified = models.DateTimeField(null=False)

@@ -22,8 +22,9 @@ class CrawlJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = CrawlJob
         fields = (
-            "uuid", "spec", "start_time", "running"
+            "uuid", "spec", "running", "start_time"
         )
+        read_only_fields = ('start_time', 'running')
 
 
 class CrawledItemSerializer(serializers.ModelSerializer):

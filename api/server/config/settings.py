@@ -123,3 +123,5 @@ STATIC_URL = '/static/'
 
 MAX_PATH_LEN = 2048
 REGEX_LEN = 512
+
+RMQ_SERVER = 'localhost'

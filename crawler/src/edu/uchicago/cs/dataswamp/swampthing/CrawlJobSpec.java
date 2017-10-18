@@ -50,12 +50,13 @@ public class CrawlJobSpec {
 		this.crawl_depth = crawl_depth;
 	}
 
-	public CrawlJobSpec(UUID uuid, String lake, String uri, Integer crawl_depth) {
+	public CrawlJobSpec(UUID uuid, String lake, String uri, Integer crawl_depth, String exclusion_patterns) {
 		super();
 		this.uuid = uuid;
 		this.lake = lake;
 		this.root_uri = uri;
 		this.crawl_depth = crawl_depth;
+		this.exclusion_patterns = exclusion_patterns;
 	}
 
 }

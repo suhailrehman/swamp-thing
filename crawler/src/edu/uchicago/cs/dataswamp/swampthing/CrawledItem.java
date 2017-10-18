@@ -9,8 +9,8 @@ import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 
@@ -49,7 +49,7 @@ public class CrawledItem {
 	}
 
 
-	public CrawledItem(FileSystem fs, LocatedFileStatus filestatus, String header_path_prefix)
+	public CrawledItem(FileSystem fs, FileStatus filestatus, String header_path_prefix)
 	{
 		super();
 		this.uuid = UUID.randomUUID();

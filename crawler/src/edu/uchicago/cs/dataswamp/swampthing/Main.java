@@ -144,29 +144,34 @@ public class Main {
 	    	{
 	    		String message = new String(body, "UTF-8");
 	    		System.out.println(" [x] Received '" + message + "'");
-	    		
+
 	    		CrawlJobSpec spec = gson.fromJson(message, CrawlJobSpec.class);
-	    		
+
 	    		Crawler crawler = new Crawler(fs);
 	    		crawler.addExclusionPattern(Pattern.compile(spec.getExclusion_patterns()));
-	    		
+
 	    		crawler.crawlTarget(new Path(spec.getUri()));
-	    		
-	    		//TODO: Send discovered items into discovered queue
-	    		for(CrawledItem item : crawler.getDiscoveredFiles())
-	    		{
+
+	    		// TODO: Send discovered items into discovered queue
+	    		for (CrawledItem item : crawler.getDiscoveredFiles()) {
 	    			channel.basicPublish("", DISCOVER_QUEUE_NAME, null, gson.toJson(item).getBytes());
 	    		}
-	    		
-	    		
-	    		//TODO: Send discovered directories into crawl queue depth --
-	    		
-	    		//DEBUG
-	    		//System.out.println(gson.toJson(crawler.getDiscoveredItems()));
-	    		
-	    		
 
-	    		//TODO: (process the message components here ...)
+	    		if (spec.getCrawl_depth() > 0) {
+
+	    			// TODO: Send discovered directories into crawl queue depth
+	    			for (CrawledItem item : crawler.getDiscoveredDirectories()) {
+	    				System.out.println("New DIR: "+item.getPath());
+	    				CrawlJobSpec newspec = new CrawlJobSpec(spec.getUuid(), spec.getLake(), item.getPath(),
+	    						spec.getCrawl_depth() - 1, spec.getExclusion_patterns());
+	    				channel.basicPublish("", CRAWL_QUEUE_NAME, null, gson.toJson(newspec).getBytes());
+	    			}
+	    		}
+
+	    		// DEBUG
+	    		// System.out.println(gson.toJson(crawler.getDiscoveredItems()));
+
+	    		// TODO: (process the message components here ...)
 	    	}});
 
 		

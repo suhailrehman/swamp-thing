@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
@@ -99,23 +100,14 @@ public class Crawler {
 
 	public void crawlTarget(Path path) throws IOException {
 
-		RemoteIterator<LocatedFileStatus> fileStatusListIterator = this.filesystem.listFiles(path, false);
-		while (fileStatusListIterator.hasNext()) {
-			LocatedFileStatus fileStatus;
-			try {
-				fileStatus = fileStatusListIterator.next();
-
+		FileStatus[] files = this.filesystem.listStatus(path);
+		
+		for (FileStatus fileStatus : files) {
 				String fullPath = fileStatus.getPath().toString();
 				if (!checkStringMatch(fullPath, this.exclusionPatterns)) {
 					CrawledItem item = new CrawledItem(this.filesystem, fileStatus, "/tmp");
 					this.discoveredItems.add(item);
 				}
-
-			} catch (IOException e) {
-				// TODO Handle Crawl IO exceptions here
-				System.err.println("WARNING, unable to crawl path: " + path.toString());
-				// e.printStackTrace();
-			}
 		}
 
 	}

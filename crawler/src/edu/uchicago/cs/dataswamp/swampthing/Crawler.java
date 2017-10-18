@@ -3,8 +3,10 @@ package edu.uchicago.cs.dataswamp.swampthing;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -56,7 +58,7 @@ public class Crawler {
 		return false;
 	}
 	
-	public void startCrawl() throws IOException
+	public void startRecursiveCrawl() throws IOException
 	{
 		//ORM Setup
 		EntityManager entityManager = Persistence.createEntityManagerFactory("crawled-item").createEntityManager();
@@ -95,8 +97,43 @@ public class Crawler {
 		
 	}
 
+	public void crawlTarget(Path path) throws IOException {
+
+		RemoteIterator<LocatedFileStatus> fileStatusListIterator = this.filesystem.listFiles(path, false);
+		while (fileStatusListIterator.hasNext()) {
+			LocatedFileStatus fileStatus;
+			try {
+				fileStatus = fileStatusListIterator.next();
+
+				String fullPath = fileStatus.getPath().toString();
+				if (!checkStringMatch(fullPath, this.exclusionPatterns)) {
+					CrawledItem item = new CrawledItem(this.filesystem, fileStatus, "/tmp");
+					this.discoveredItems.add(item);
+				}
+
+			} catch (IOException e) {
+				// TODO Handle Crawl IO exceptions here
+				System.err.println("WARNING, unable to crawl path: " + path.toString());
+				// e.printStackTrace();
+			}
+		}
+
+	}
+
 	public List<CrawledItem> getDiscoveredItems() {
 		return discoveredItems;
+	}
+	
+	public List<CrawledItem> getDiscoveredDirectories()
+	{
+	    return discoveredItems.stream().filter(u -> u.isDirectory()).collect(Collectors.toList());
+
+	}
+	
+	public List<CrawledItem> getDiscoveredFiles()
+	{
+	    return discoveredItems.stream().filter(u -> !(u.isDirectory())).collect(Collectors.toList());
+
 	}
 
 

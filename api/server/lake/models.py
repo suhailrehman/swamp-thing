@@ -33,7 +33,7 @@ class CrawlJob(models.Model):
     uuid = models.UUIDField(primary_key=True,
                             default=uuid.uuid4, editable=False)
     spec = models.ForeignKey(CrawlJobSpec)
-    start_time = models.DateTimeField()
+    start_time = models.DateTimeField(null=True)
     running = models.BooleanField(default=False)
 
 

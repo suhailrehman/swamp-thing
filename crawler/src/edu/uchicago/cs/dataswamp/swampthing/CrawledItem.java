@@ -24,7 +24,7 @@ public class CrawledItem {
 	private UUID uuid;
 	private String path;
 	private long file_size;
-	private boolean is_directory;
+	private boolean directory;
 	private String owner_name;
 	private String group_name;
 	private long modification_time;
@@ -55,7 +55,7 @@ public class CrawledItem {
 		this.uuid = UUID.randomUUID();
 		this.path = filestatus.getPath().toString();
 		this.file_size = filestatus.getLen();
-		this.is_directory = filestatus.isDirectory();
+		this.directory = filestatus.isDirectory();
 		this.owner_name = filestatus.getOwner();
 		this.group_name = filestatus.getGroup();
 		this.modification_time = filestatus.getModificationTime();
@@ -93,8 +93,8 @@ public class CrawledItem {
 	}
 
 
-	public boolean isIs_directory() {
-		return is_directory;
+	public boolean isDirectory() {
+		return directory;
 	}
 
 
@@ -131,7 +131,7 @@ public class CrawledItem {
 	@Override
 	public String toString() {
 		return "CrawledItem [uuid=" + uuid + ", path=" + path + ", file_size=" + file_size + ", is_directory="
-				+ is_directory + ", owner=" + owner_name + ", group=" + group_name + ", modification_time=" + modification_time
+				+ directory + ", owner=" + owner_name + ", group=" + group_name + ", modification_time=" + modification_time
 				+ ", fs_scheme=" + fs_scheme + ", fs_uri=" + fs_uri + ", header_path=" + header_path + "]";
 	}
 	

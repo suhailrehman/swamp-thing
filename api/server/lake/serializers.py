@@ -29,7 +29,25 @@ class CrawlJobSerializer(serializers.ModelSerializer):
 
 class CrawledItemSerializer(serializers.ModelSerializer):
     """ Serializer to represent the Employee model """
+
+    """
+    Example: '{"crawl_job_uuid":"10a3a312-fc4b-4e87-b81a-f9cce65fb321",
+    "path":"file:/home/suhail/Downloads/sample.jpg",
+    "file_size":673,"directory":false,"owner_name":"suhail",
+    "group_name":"suhail","modification_time":1476461630000}'
+    """
+
     class Meta:
         model = CrawledItem
         fields = ("id", "lake", "path", "directory", "size",
                   "last_modified", "owner", "last_crawl")
+
+    def create(self, validated_data):
+        crawl_job_uuid = validated_data.pop('last_crawl')
+        crawl_job = CrawlJob.objects.get(crawl_job_uuid)
+        lake = crawl_job.lake
+
+        item = CrawledItem(lake=lake,
+                           last_crawl=crawl_job, **validated_data)
+        item.save()
+        return item

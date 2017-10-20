@@ -130,8 +130,8 @@ public class Main {
 	    
 	    Gson gson = new GsonBuilder().create();
 	    
+	    channel.queueDeclare(CRAWL_QUEUE_NAME, false, false, false, null);
 	    channel.queueDeclare(DISCOVER_QUEUE_NAME, false, false, false, null);
-
 		
 	    channel.basicConsume(CRAWL_QUEUE_NAME, true, "myConsumerTag",
 	    		new DefaultConsumer(channel) {
@@ -150,7 +150,7 @@ public class Main {
 	    		Crawler crawler = new Crawler(fs);
 	    		crawler.addExclusionPattern(Pattern.compile(spec.getExclusion_patterns()));
 
-	    		crawler.crawlTarget(new Path(spec.getUri()));
+	    		crawler.crawlTarget(spec);
 
 	    		// TODO: Send discovered items into discovered queue
 	    		for (CrawledItem item : crawler.getDiscoveredFiles()) {

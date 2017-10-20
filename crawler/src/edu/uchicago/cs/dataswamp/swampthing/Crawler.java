@@ -3,7 +3,6 @@ package edu.uchicago.cs.dataswamp.swampthing;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -79,7 +78,7 @@ public class Crawler {
 					if(!checkStringMatch(fullPath, this.exclusionPatterns))
 					{
 						txn.begin();
-						CrawledItem item = new CrawledItem(this.filesystem, fileStatus, "/tmp");
+						CrawledItem item = new CrawledItem(this.filesystem, fileStatus);
 						this.discoveredItems.add(item);
 						entityManager.persist(item);
 						txn.commit();
@@ -98,14 +97,14 @@ public class Crawler {
 		
 	}
 
-	public void crawlTarget(Path path) throws IOException {
+	public void crawlTarget(CrawlJobSpec jobspec) throws IOException {
 
-		FileStatus[] files = this.filesystem.listStatus(path);
+		FileStatus[] files = this.filesystem.listStatus(new Path(jobspec.getUri()));
 		
 		for (FileStatus fileStatus : files) {
 				String fullPath = fileStatus.getPath().toString();
 				if (!checkStringMatch(fullPath, this.exclusionPatterns)) {
-					CrawledItem item = new CrawledItem(this.filesystem, fileStatus, "/tmp");
+					CrawledItem item = new CrawledItem(this.filesystem, jobspec.getUuid(), jobspec.getLake(), fileStatus);
 					this.discoveredItems.add(item);
 				}
 		}

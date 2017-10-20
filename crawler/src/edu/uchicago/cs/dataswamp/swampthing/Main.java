@@ -6,6 +6,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
@@ -26,7 +27,8 @@ import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
@@ -128,7 +130,7 @@ public class Main {
 		
 	    Channel channel = connection.createChannel();
 	    
-	    Gson gson = new GsonBuilder().create();
+	    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 	    
 	    channel.queueDeclare(CRAWL_QUEUE_NAME, false, false, false, null);
 	    channel.queueDeclare(DISCOVER_QUEUE_NAME, false, false, false, null);
@@ -146,11 +148,14 @@ public class Main {
 	    		System.out.println(" [x] Received '" + message + "'");
 
 	    		CrawlJobSpec spec = gson.fromJson(message, CrawlJobSpec.class);
+	    		UUID last_crawl = UUID.fromString(gson.fromJson(message, JsonObject.class).get("last_crawl").getAsString());
 
 	    		Crawler crawler = new Crawler(fs);
 	    		crawler.addExclusionPattern(Pattern.compile(spec.getExclusion_patterns()));
+	    		crawler.setLast_crawl(last_crawl);
 
 	    		crawler.crawlTarget(spec);
+	    		
 
 	    		// TODO: Send discovered items into discovered queue
 	    		for (CrawledItem item : crawler.getDiscoveredFiles()) {
@@ -164,7 +169,11 @@ public class Main {
 	    				System.out.println("New DIR: "+item.getPath());
 	    				CrawlJobSpec newspec = new CrawlJobSpec(spec.getUuid(), spec.getLake(), item.getPath(),
 	    						spec.getCrawl_depth() - 1, spec.getExclusion_patterns());
-	    				channel.basicPublish("", CRAWL_QUEUE_NAME, null, gson.toJson(newspec).getBytes());
+	    				
+	    				JsonElement jsonElement = gson.toJsonTree(newspec);
+	    				jsonElement.getAsJsonObject().addProperty("last_crawl", last_crawl.toString());
+	    				
+	    				channel.basicPublish("", CRAWL_QUEUE_NAME, null, gson.toJson(jsonElement).getBytes());
 	    			}
 	    		}
 

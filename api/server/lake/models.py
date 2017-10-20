@@ -30,6 +30,7 @@ class CrawlJobSpec(models.Model):
 
 
 class CrawlJob(models.Model):
+    lake = models.ForeignKey(Lake, related_name='jobs')
     uuid = models.UUIDField(primary_key=True,
                             default=uuid.uuid4, editable=False)
     spec = models.ForeignKey(CrawlJobSpec)
@@ -47,6 +48,8 @@ class CrawledItem(models.Model):
     group = models.CharField(max_length=100)
     last_crawl = models.ForeignKey(CrawlJob, related_name='items')
 
+    class Meta:
+        unique_together = ('lake', 'path')
     '''
     HDFS = 'HD'
     S3 = 'S3'

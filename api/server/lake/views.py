@@ -33,16 +33,19 @@ class CrawlJobViewSet(viewsets.ModelViewSet):
         # TODO: Validation and Exception Handlers
         crawljob = self.get_object()
         jobspec_serializer = CrawlJobSpecSerializer(crawljob.spec)
+
+        output_data = jobspec_serializer.data
+        output_data['last_crawl'] = crawljob.uuid
         connection = pika.BlockingConnection(pika.ConnectionParameters(settings.RMQ_SERVER))
         channel = connection.channel()
         channel.queue_declare(queue='crawl')
         channel.basic_publish(exchange='',
                               routing_key='crawl',
-                              body=JSONRenderer().render(jobspec_serializer.data))
+                              body=JSONRenderer().render(output_data))
         crawljob.running = True
         crawljob.start_time = datetime.now()
         crawljob.save()
-        return Response({'status': 'started', 'jobspec': jobspec_serializer.data})
+        return Response({'status': 'started', 'sent_data': output_data})
 
     @detail_route(methods=['post'])
     def stop(self, request, pk=None):

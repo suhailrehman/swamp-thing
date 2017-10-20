@@ -22,7 +22,7 @@ class CrawlJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = CrawlJob
         fields = (
-            "uuid", "spec", "running", "start_time"
+            "lake", "uuid", "spec", "running", "start_time"
         )
         read_only_fields = ('start_time', 'running')
 
@@ -41,13 +41,3 @@ class CrawledItemSerializer(serializers.ModelSerializer):
         model = CrawledItem
         fields = ("id", "lake", "path", "directory", "size",
                   "last_modified", "owner", "last_crawl")
-
-    def create(self, validated_data):
-        crawl_job_uuid = validated_data.pop('last_crawl')
-        crawl_job = CrawlJob.objects.get(crawl_job_uuid)
-        lake = crawl_job.lake
-
-        item = CrawledItem(lake=lake,
-                           last_crawl=crawl_job, **validated_data)
-        item.save()
-        return item

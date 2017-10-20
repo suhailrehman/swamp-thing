@@ -3,6 +3,7 @@ package edu.uchicago.cs.dataswamp.swampthing;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class Crawler {
 	List<Path> crawlPaths;
 	List<Pattern> exclusionPatterns;
 	List<CrawledItem> discoveredItems = new ArrayList<CrawledItem>();
+	UUID last_crawl;
 	
 	public Crawler(FileSystem fs) {
 		super();
@@ -37,6 +39,14 @@ public class Crawler {
 		this.filesystem = fs;
 		this.crawlPaths= crawlpaths;
 		this.exclusionPatterns = exclusionPatterns;
+	}
+
+	public UUID getLast_crawl() {
+		return last_crawl;
+	}
+
+	public void setLast_crawl(UUID last_crawl) {
+		this.last_crawl = last_crawl;
 	}
 
 	public void addPath(Path path) {
@@ -104,7 +114,7 @@ public class Crawler {
 		for (FileStatus fileStatus : files) {
 				String fullPath = fileStatus.getPath().toString();
 				if (!checkStringMatch(fullPath, this.exclusionPatterns)) {
-					CrawledItem item = new CrawledItem(this.filesystem, jobspec.getUuid(), jobspec.getLake(), fileStatus);
+					CrawledItem item = new CrawledItem(this.filesystem, this.getLast_crawl(), jobspec.getLake(), fileStatus);
 					this.discoveredItems.add(item);
 				}
 		}

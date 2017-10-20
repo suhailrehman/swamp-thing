@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Entity;
 
@@ -29,7 +31,7 @@ public class CrawledItem {
 	private boolean directory;
 	private String owner;
 	private String group;
-	private long last_modified;
+	private Date last_modified;
 	//private String fs_scheme;
 	//private String fs_uri;
 	//private String header_path;
@@ -58,7 +60,7 @@ public class CrawledItem {
 		this.directory = filestatus.isDirectory();
 		this.owner = filestatus.getOwner();
 		this.group = filestatus.getGroup();
-		this.last_modified = filestatus.getModificationTime();
+		this.last_modified = Date.from(Instant.ofEpochMilli(filestatus.getModificationTime()));
 		
 		/*
 		if(!this.is_directory)
@@ -120,7 +122,7 @@ public class CrawledItem {
 
 
 	public long getModification_time() {
-		return last_modified;
+		return last_modified.getTime();
 	}
 
 	

@@ -50,6 +50,16 @@ class CrawledItem(models.Model):
 
     class Meta:
         unique_together = ('lake', 'path')
+
+    def compare_versions(self, validated_data):
+        new_timestamp = validated_data.get('last_modified')
+        old_timestamp = self.last_modified
+        if new_timestamp > old_timestamp:
+            return 1
+        elif new_timestamp == old_timestamp:
+            return 0
+        else:
+            return -1
     '''
     HDFS = 'HD'
     S3 = 'S3'

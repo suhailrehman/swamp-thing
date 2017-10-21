@@ -1,5 +1,9 @@
 from rest_framework import serializers
 from lake.models import Lake, CrawlJobSpec, CrawlJob, CrawledItem
+import pika
+import config.settings as settings
+from rest_framework.renderers import JSONRenderer
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class LakeSerializer(serializers.ModelSerializer):
@@ -36,6 +40,26 @@ class CrawledItemSerializer(serializers.ModelSerializer):
     "file_size":673,"directory":false,"owner_name":"suhail",
     "group_name":"suhail","modification_time":1476461630000}'
     """
+
+    def create(self, validated_data):
+        try:
+            existing_item = CrawledItem.objects.get(
+                lake=validated_data.get('lake', None),
+                path=validated_data.get('path', None))
+            if existing_item.compare_versions(existing_item, validated_data) > 1:
+                # Send this item on the update queue
+                existing_item.update(**validated_data)
+                item_serializer = CrawledItemSerializer(existing_item)
+                connection = pika.BlockingConnection(pika.ConnectionParameters(settings.RMQ_SERVER))
+                channel = connection.channel()
+                channel.queue_declare(queue='updates')
+                channel.basic_publish(exchange='',
+                                      routing_key='updates',
+                                      body=JSONRenderer().render(item_serializer.data))
+                pass
+            # TODO: Handle case of timestamp rolling back, return an error via API
+        except ObjectDoesNotExist:
+            CrawledItem.objects.create(**validated_data)
 
     class Meta:
         model = CrawledItem

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -27,8 +28,11 @@ import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
@@ -122,19 +126,28 @@ public class Main {
 		Configuration conf = new Configuration();
 		//conf.addResource(new Path("/etc/hadoop/conf/core-site.xml"));
 		
+		
+		//Set up Apache Filesystem object to interact with FS
 		FileSystem fs = FileSystem.get(conf);
 		
+		//Set up RabbitMQ connections
 		Connection connection = getRabbitConnection();
-		
-		System.out.println("Listening for Incoming Crawl Jobs");
-		
-	    Channel channel = connection.createChannel();
+		Channel channel = connection.createChannel();
 	    
-	    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+	    //Register date and byte serialization formats
+	    GsonBuilder builder = new GsonBuilder(); 
+	    builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		builder.registerTypeAdapter(byte[].class, (JsonSerializer<byte[]>) (src, typeOfSrc, context) -> new JsonPrimitive(Base64.getEncoder().encodeToString(src)));
+	    builder.registerTypeAdapter(byte[].class, (JsonDeserializer<byte[]>) (json, typeOfT, context) -> Base64.getDecoder().decode(json.getAsString()));
+	    Gson gson = builder.create();
 	    
+	    //Declare Rabbit Queues if it does not already exist.
 	    channel.queueDeclare(CRAWL_QUEUE_NAME, false, false, false, null);
 	    channel.queueDeclare(DISCOVER_QUEUE_NAME, false, false, false, null);
 		
+	    
+	    System.out.println("Listening for Incoming Crawl Jobs");
+	    
 	    channel.basicConsume(CRAWL_QUEUE_NAME, true, "myConsumerTag",
 	    		new DefaultConsumer(channel) {
 	    	@Override
@@ -155,16 +168,16 @@ public class Main {
 	    		crawler.setLast_crawl(last_crawl);
 
 	    		crawler.crawlTarget(spec);
-	    		
-
-	    		// TODO: Send discovered items into discovered queue
+	    
+	    		//Send discovered items (files and directories) into discovered queue
 	    		for (CrawledItem item : crawler.getDiscoveredFiles()) {
+	    			item.get4khead(fs);
 	    			channel.basicPublish("", DISCOVER_QUEUE_NAME, null, gson.toJson(item).getBytes());
 	    		}
 
 	    		if (spec.getCrawl_depth() > 0) {
 
-	    			// TODO: Send discovered directories into crawl queue depth
+	    			//Send discovered directories into crawl queue for recursive crawl (only if depth : 0)
 	    			for (CrawledItem item : crawler.getDiscoveredDirectories()) {
 	    				System.out.println("New DIR: "+item.getPath());
 	    				CrawlJobSpec newspec = new CrawlJobSpec(spec.getUuid(), spec.getLake(), item.getPath(),

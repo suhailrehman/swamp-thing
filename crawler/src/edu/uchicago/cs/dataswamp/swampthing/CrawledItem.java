@@ -32,6 +32,7 @@ public class CrawledItem {
 	private String owner;
 	private String group;
 	private Date last_modified;
+	private byte[] head_4k; //Raw 4k byte array of file contents.
 	//private String fs_scheme;
 	//private String fs_uri;
 	//private String header_path;
@@ -47,6 +48,23 @@ public class CrawledItem {
 	}
 	
 	
+	@SuppressWarnings("unused")
+	public byte[] get4khead(FileSystem fs) throws IllegalArgumentException, IOException
+	{
+		//TODO: Check if this object is valid
+		if(!this.directory)
+		{
+			int read_size = (int) (this.size>4096?4096:this.size);
+			this.head_4k = new byte[read_size];
+			InputStream is = fs.open(new Path(path));
+			is.read(this.head_4k, 0, read_size);
+			is.close();
+		}
+		
+		return this.head_4k;
+		
+	}
+	
 	public CrawledItem() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -61,7 +79,7 @@ public class CrawledItem {
 		this.owner = filestatus.getOwner();
 		this.group = filestatus.getGroup();
 		this.last_modified = Date.from(Instant.ofEpochMilli(filestatus.getModificationTime()));
-		
+		this.head_4k = null;
 		/*
 		if(!this.is_directory)
 		{

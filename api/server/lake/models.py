@@ -47,9 +47,10 @@ class CrawledItem(models.Model):
     owner = models.CharField(max_length=100)
     group = models.CharField(max_length=100)
     last_crawl = models.ForeignKey(CrawlJob, related_name='items')
+    head_4k = models.CharField(max_length=8192, null=True)
 
-    class Meta:
-        unique_together = ('lake', 'path')
+    #class Meta:
+    #    unique_together = ('lake', 'path')
 
     def compare_versions(self, validated_data):
         new_timestamp = validated_data.get('last_modified')

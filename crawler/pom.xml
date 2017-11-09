@@ -32,11 +32,11 @@
     </plugins>
     <resources>
 			<resource>
-				<directory>src/resources</directory>
+				<directory>src/main/resources</directory>
 				<targetPath>${project.build.directory}/classes</targetPath>
 			</resource>
 			<resource>
-				<directory>src/META-INF</directory>
+				<directory>src/main/META-INF</directory>
 				<targetPath>${project.build.directory}/classes/META-INF</targetPath>
 			</resource>
 		</resources>

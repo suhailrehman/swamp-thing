@@ -1,6 +1,4 @@
-/home/suhail/eclipse-workspace/swamp-thing/src/edu/uchicago/cs/dataswamp/swampthing/App.java
-/home/suhail/eclipse-workspace/swamp-thing/src/edu/uchicago/cs/dataswamp/swampthing/Main.java
-/home/suhail/eclipse-workspace/swamp-thing/src/edu/uchicago/cs/dataswamp/swampthing/CrawledItem.java
-/home/suhail/eclipse-workspace/swamp-thing/src/org/eclipse/persistence/logging/FastLogFormatter.java
-/home/suhail/eclipse-workspace/swamp-thing/src/org/eclipse/persistence/logging/CommonsLoggingSessionLog.java
-/home/suhail/eclipse-workspace/swamp-thing/src/edu/uchicago/cs/dataswamp/swampthing/Crawler.java
+/home/suhail/eclipse-workspace/swamp-thing/crawler/src/main/java/edu/uchicago/cs/dataswamp/swampthing/CrawlJobSpec.java
+/home/suhail/eclipse-workspace/swamp-thing/crawler/src/main/java/edu/uchicago/cs/dataswamp/swampthing/Main.java
+/home/suhail/eclipse-workspace/swamp-thing/crawler/src/main/java/edu/uchicago/cs/dataswamp/swampthing/CrawledItem.java
+/home/suhail/eclipse-workspace/swamp-thing/crawler/src/main/java/edu/uchicago/cs/dataswamp/swampthing/Crawler.java

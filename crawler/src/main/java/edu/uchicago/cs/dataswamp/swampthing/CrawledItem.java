@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Entity;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -16,12 +15,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 
 
-@Entity(name = "crawled_item")
 public class CrawledItem {
 	
-	/*("id", "lake", "path", "directory", "size",
-            "last_modified", "owner", "last_crawl")
-    */
     public static final long HEADER_SIZE = 4096L;
 
 	private UUID last_crawl;
@@ -33,11 +28,7 @@ public class CrawledItem {
 	private String group;
 	private Date last_modified;
 	private byte[] head_4k; //Raw 4k byte array of file contents.
-	//private String fs_scheme;
-	//private String fs_uri;
-	//private String header_path;
 	
-
 	@SuppressWarnings("unused")
 	private void copyHDFStoLocal(String hdfspath, String localpath, FileSystem fs, long size) throws IOException
 	{
@@ -48,13 +39,12 @@ public class CrawledItem {
 	}
 	
 	
-	@SuppressWarnings("unused")
 	public byte[] get4khead(FileSystem fs) throws IllegalArgumentException, IOException
 	{
 		//TODO: Check if this object is valid
 		if(!this.directory)
 		{
-			int read_size = (int) (this.size>4096?4096:this.size);
+			int read_size = (int) (this.size>HEADER_SIZE?HEADER_SIZE:this.size);
 			this.head_4k = new byte[read_size];
 			InputStream is = fs.open(new Path(path));
 			is.read(this.head_4k, 0, read_size);

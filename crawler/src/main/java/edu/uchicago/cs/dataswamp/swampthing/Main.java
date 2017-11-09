@@ -91,6 +91,7 @@ public class Main {
 
 	}
 
+	@Deprecated
 	public static void recursiveTest(String[] args) throws Exception {
 
 		// pickup config files off classpath
@@ -134,7 +135,7 @@ public class Main {
 		Connection connection = getRabbitConnection();
 		Channel channel = connection.createChannel();
 	    
-	    //Register date and byte serialization formats
+	    //Register date and byte serialization (Base64) formats
 	    GsonBuilder builder = new GsonBuilder(); 
 	    builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		builder.registerTypeAdapter(byte[].class, (JsonSerializer<byte[]>) (src, typeOfSrc, context) -> new JsonPrimitive(Base64.getEncoder().encodeToString(src)));
@@ -193,7 +194,6 @@ public class Main {
 	    		// DEBUG
 	    		// System.out.println(gson.toJson(crawler.getDiscoveredItems()));
 
-	    		// TODO: (process the message components here ...)
 	    	}});
 
 		

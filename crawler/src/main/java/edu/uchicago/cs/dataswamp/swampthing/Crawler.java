@@ -8,9 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -57,9 +54,9 @@ public class Crawler {
 		this.exclusionPatterns.add(pattern);
 	}
 	
-	private boolean checkStringMatch(String line, List<Pattern> patternList)
+	private boolean checkStringMatch(String line)
 	{
-		for(Pattern pattern: patternList)
+		for(Pattern pattern: this.exclusionPatterns)
 		{
 			Matcher m = pattern.matcher(line);
 			if(m.find())
@@ -68,13 +65,10 @@ public class Crawler {
 		return false;
 	}
 	
+	@Deprecated //Recursive crawl does not emit directories.
 	public void startRecursiveCrawl() throws IOException
 	{
-		//ORM Setup
-		EntityManager entityManager = Persistence.createEntityManagerFactory("crawled-item").createEntityManager();
-		EntityTransaction txn = entityManager.getTransaction();
 		
-
 		for(Path path : this.crawlPaths)
 		{
 			// the second boolean parameter here sets the recursion to true
@@ -85,14 +79,10 @@ public class Crawler {
 					fileStatus = fileStatusListIterator.next();
 				
 					String fullPath = fileStatus.getPath().toString();
-					if(!checkStringMatch(fullPath, this.exclusionPatterns))
+					if(!checkStringMatch(fullPath))
 					{
-						txn.begin();
 						CrawledItem item = new CrawledItem(this.filesystem, fileStatus);
 						this.discoveredItems.add(item);
-						entityManager.persist(item);
-						txn.commit();
-
 					}
 				} catch (IOException e) {
 					//TODO Handle Crawl IO exceptions here
@@ -102,9 +92,7 @@ public class Crawler {
 					
 			}
 		}
-		
-		entityManager.close();
-		
+				
 	}
 
 	public void crawlTarget(CrawlJobSpec jobspec) throws IOException {
@@ -113,7 +101,7 @@ public class Crawler {
 		
 		for (FileStatus fileStatus : files) {
 				String fullPath = fileStatus.getPath().toString();
-				if (!checkStringMatch(fullPath, this.exclusionPatterns)) {
+				if (!checkStringMatch(fullPath)) {
 					CrawledItem item = new CrawledItem(this.filesystem, this.getLast_crawl(), jobspec.getLake(), fileStatus);
 					this.discoveredItems.add(item);
 				}

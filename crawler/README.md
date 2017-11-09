@@ -1,6 +1,6 @@
 # swamp-thing Crawler
 
 ## Task List
-- [ ] Clean & Refactor Crawler for Single point crawling
-- [ ] Add Rabbit API
+- [X] Clean & Refactor Crawler for Single point crawling
+- [X] Add Rabbit API
 - [ ] Document

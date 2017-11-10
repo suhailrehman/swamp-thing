@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.junit.After;
@@ -47,7 +50,32 @@ public class CrawlerTest {
 
 	@Ignore("Not yet implemented")
 	@Test
-	public void testCrawlTarget() {
+	public void testCrawlTargetPOSIX() throws IOException {
+		
+		//Generate Random POSIX Temp File and crawl it. Verify that FS metadata matches those from regular syscalls.
+				
+		CrawlJobSpec exclude = new CrawlJobSpec(UUID.randomUUID(), "GlobusLake", "/folder/.gitignore", 1, "(.*)(/\\.)(.*)"); 
+		CrawlJobSpec include = new CrawlJobSpec(UUID.randomUUID(), "GlobusLake", "/folder/importantfile", 1, "(.*)(/\\.)(.*)"); 
+		
+		Crawler crawler = new Crawler(this.fs);
+		crawler.addExclusionPattern(Pattern.compile(exclude.getExclusion_patterns()));
+		
+		crawler.crawlTarget(exclude);
+	}
+	
+	@Ignore("Not yet implemented")
+	@Test
+	public void testCrawlTargetHDFS() throws IOException, URISyntaxException {
+		
+		//Crawl a mock HDFS endpoint
+			
+		FileSystem fs1 = FileSystem.get(new URI("hdfs://madison.cs.uchicago.edu/"), this.conf); 
+		CrawlJobSpec hdfs_spec = new CrawlJobSpec(UUID.randomUUID(), "HDFSLake", "hdfs://madison.cs.uchicago.edu/", 1, "(.*)(/\\.)(.*)"); 
+		
+		Crawler crawler = new Crawler(fs1);
+		crawler.addExclusionPattern(Pattern.compile(hdfs_spec.getExclusion_patterns()));
+		
+		crawler.crawlTarget(hdfs_spec);
 	}
 
 	@Ignore("Not yet implemented")
@@ -65,19 +93,6 @@ public class CrawlerTest {
 	public void testGetDiscoveredFiles() {
 	}
 
-	@Ignore("Not yet implemented")
-	@Test
-	public void testCheckStringMatch() throws IOException
-	{
-		
-		CrawlJobSpec exclude = new CrawlJobSpec(UUID.randomUUID(), "GlobusLake", "/folder/.gitignore", 1, "(.*)(/\\.)(.*)"); 
-		CrawlJobSpec include = new CrawlJobSpec(UUID.randomUUID(), "GlobusLake", "/folder/importantfile", 1, "(.*)(/\\.)(.*)"); 
-		
-		Crawler crawler = new Crawler(this.fs);
-		crawler.addExclusionPattern(Pattern.compile(exclude.getExclusion_patterns()));
-		
-		crawler.crawlTarget(exclude);
-		
-	}
+	
 	
 }

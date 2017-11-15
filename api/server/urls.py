@@ -30,4 +30,4 @@ router.register(prefix='crawljobspecs', viewset=CrawlJobSpecViewSet)
 router.register(prefix='crawljobs', viewset=CrawlJobViewSet)
 router.register(prefix='crawleditems', viewset=CrawledItemViewSet)
 
-urlpatterns = router.urls
+urlpatterns += router.urls

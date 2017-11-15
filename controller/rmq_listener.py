@@ -5,13 +5,14 @@ import json
 import urllib2
 
 
-RABBIT_SERVER = 'localhost'
-API_SERVER = 'localhost'
+AQMP_URL = 'amqp://app:app@always.cs.uchicago.edu:5672/always.cs.uchicago.edu'
+API_SERVER = 'always.cs.uchicago.edu'
 API_PORT = 8000
 
 
 def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body)
+    #print(" [x] Received %r" % body)
+    print("New Item on Queue")
 
     try:
         req = urllib2.Request('http://' + API_SERVER + ':' + str(API_PORT) + '/crawleditems/')
@@ -23,7 +24,7 @@ def callback(ch, method, properties, body):
 
 
 def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBIT_SERVER))
+    connection = pika.BlockingConnection(pika.URLParameters(AQMP_URL))
     channel = connection.channel()
 
     channel.queue_declare(queue='discover')

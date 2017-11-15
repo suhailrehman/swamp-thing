@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'lake',
 ]
 
@@ -124,4 +125,4 @@ STATIC_URL = '/static/'
 MAX_PATH_LEN = 2048
 REGEX_LEN = 512
 
-RMQ_SERVER = 'localhost'
+AQMP_URL = 'amqp://app:app@always.cs.uchicago.edu:5672/always.cs.uchicago.edu'

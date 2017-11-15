@@ -43,7 +43,7 @@ class CrawledItemSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         try:
-            #print "Item Match!"
+            # print "Item Match!"
             existing_item = CrawledItem.objects.get(
                 lake=validated_data.get('lake', None),
                 path=validated_data.get('path', None))
@@ -53,7 +53,8 @@ class CrawledItemSerializer(serializers.ModelSerializer):
             if existing_item.compare_versions(validated_data) > 1:
                 # Send this item on the update queue
                 item_serializer = CrawledItemSerializer(existing_item)
-                connection = pika.BlockingConnection(pika.ConnectionParameters(settings.RMQ_SERVER))
+                connection = pika.BlockingConnection(
+                    pika.URLParameters(settings.AQMP_URL))
                 channel = connection.channel()
                 channel.queue_declare(queue='updates')
                 channel.basic_publish(exchange='',
@@ -62,8 +63,23 @@ class CrawledItemSerializer(serializers.ModelSerializer):
             # TODO: Handle case of timestamp rolling back, return an error via API
             return existing_item
         except ObjectDoesNotExist:
-            #print "Creating Item"
-            CrawledItem.objects.create(**validated_data)
+            print "Creating Item"
+            return CrawledItem.objects.create(**validated_data)
+
+    class Meta:
+        model = CrawledItem
+        fields = ("id", "lake", "path", "directory", "size",
+                  "last_modified", "owner", "last_crawl", "head_4k")
+
+
+class CrawledItemListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CrawledItem
+        fields = ("id", "lake", "path", "directory")
+
+
+class CrawledItemDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CrawledItem

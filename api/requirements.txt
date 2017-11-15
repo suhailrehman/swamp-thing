@@ -2,3 +2,4 @@ django
 djangorestframework
 ipython
 pika
+django-filter

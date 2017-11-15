@@ -84,7 +84,7 @@ public class Crawler {
 						CrawledItem item = new CrawledItem(this.filesystem, fileStatus);
 						this.discoveredItems.add(item);
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 					//TODO Handle Crawl IO exceptions here
 					System.err.println("WARNING, unable to crawl path: "+ path.toString());
 					//e.printStackTrace();

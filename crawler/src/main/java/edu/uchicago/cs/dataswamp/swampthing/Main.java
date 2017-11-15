@@ -94,17 +94,15 @@ public class Main {
 	    		FileSystem fs;
 				try {
 					fs = FileSystem.get(new URI(spec.root_uri), conf);
-				} 
-				catch (URISyntaxException e) {
-					logger.error("Invalid URI received: " + spec.root_uri);
-					return;
-				}
+				
 
 	    		Crawler crawler = new Crawler(fs);
 	    		crawler.addExclusionPattern(Pattern.compile(spec.getExclusion_patterns()));
 	    		crawler.setLast_crawl(last_crawl);
 
 	    		crawler.crawlTarget(spec);
+	    		
+				
 	    
 	    		//Send discovered items (files and directories) into discovered queue
 	    		for (CrawledItem item : crawler.getDiscoveredFiles()) {
@@ -128,6 +126,8 @@ public class Main {
 	    				channel.basicPublish("", props.getProperty("crawlQueueName"), null, gson.toJson(jsonElement).getBytes());
 	    			}
 	    		}
+	    		
+	    		
 
 	    		
 	    		logger.info(String.format("%s Crawl directory: [%s], Depth: %d, Discovered %d directories, %d files.", 
@@ -136,6 +136,17 @@ public class Main {
 	    				spec.getCrawl_depth(),
 	    				crawler.getDiscoveredDirectories().size(),
 	    				crawler.getDiscoveredFiles().size()));
+	    		
+				} 
+				catch (URISyntaxException e) {
+					logger.error("Invalid URI received: " + spec.root_uri);
+					return;
+				}
+				catch (Exception e) {
+					logger.error("Cannot Crawl Target: " + spec.root_uri);
+				}
+				
+				
 	    	}});
 
 		

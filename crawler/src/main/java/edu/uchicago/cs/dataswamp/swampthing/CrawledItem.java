@@ -13,11 +13,15 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 
 public class CrawledItem {
 	
     public static final long HEADER_SIZE = 4096L;
+	private static final Logger logger = LogManager.getLogger(CrawledItem.class);
+
 
 	private UUID last_crawl;
 	private String lake;
@@ -39,16 +43,24 @@ public class CrawledItem {
 	}
 	
 	
-	public byte[] get4khead(FileSystem fs) throws IllegalArgumentException, IOException
+	public byte[] get4khead(FileSystem fs)
 	{
 		//TODO: Check if this object is valid
 		if(!this.directory)
 		{
-			int read_size = (int) (this.size>HEADER_SIZE?HEADER_SIZE:this.size);
-			this.head_4k = new byte[read_size];
-			InputStream is = fs.open(new Path(path));
-			is.read(this.head_4k, 0, read_size);
-			is.close();
+			try
+			{
+				int read_size = (int) (this.size>HEADER_SIZE?HEADER_SIZE:this.size);
+				this.head_4k = new byte[read_size];
+				InputStream is = fs.open(new Path(path));
+				is.read(this.head_4k, 0, read_size);
+				is.close();
+			}
+			catch (org.apache.hadoop.security.AccessControlException e) {
+				logger.warn("No permissions to read: "+ this.path);
+			} catch (IllegalArgumentException | IOException e) {
+				logger.warn("I/O Error reading: "+ this.path);
+			}
 		}
 		
 		return this.head_4k;

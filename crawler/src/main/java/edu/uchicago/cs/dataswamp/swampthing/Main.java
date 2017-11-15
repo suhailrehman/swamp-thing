@@ -117,6 +117,9 @@ public class Main {
 	    			//Send discovered directories into crawl queue for recursive crawl (only if depth : 0)
 	    			for (CrawledItem item : crawler.getDiscoveredDirectories()) {
 	    				logger.debug("Discovered New Directory: "+item.getPath());
+	    				
+	    				channel.basicPublish("", props.getProperty("discoverQueueName"), null, gson.toJson(item).getBytes());
+	    				
 	    				CrawlJobSpec newspec = new CrawlJobSpec(spec.getUuid(), spec.getLake(), item.getPath(),
 	    						spec.getCrawl_depth() - 1, spec.getExclusion_patterns());
 	    				

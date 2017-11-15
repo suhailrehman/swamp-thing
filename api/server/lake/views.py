@@ -92,6 +92,10 @@ class CrawledItemViewSet(viewsets.ModelViewSet):
         """
         queryset = CrawledItem.objects.all()
         lake = self.request.query_params.get('lake', None)
+        directory = self.request.query_params.get('directory', None)
+        # todo string representations of True and False in URL
         if lake is not None:
             queryset = queryset.filter(lake__name=lake)
+        if directory is not None:
+            queryset = queryset.filter(directory=True)
         return queryset

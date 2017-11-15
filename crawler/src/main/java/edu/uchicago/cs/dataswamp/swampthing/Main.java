@@ -43,6 +43,7 @@ public class Main {
 		factory.setHost(props.getProperty("rabbitServer"));
 		factory.setUsername(props.getProperty("rabbitUser"));
 		factory.setPassword(props.getProperty("rabbitPassword"));
+		factory.setVirtualHost(props.getProperty("rabbitServer"));
 		return factory.newConnection();
 	}
 

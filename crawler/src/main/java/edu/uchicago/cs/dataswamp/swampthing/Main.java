@@ -41,6 +41,8 @@ public class Main {
 			throws KeyManagementException, NoSuchAlgorithmException, URISyntaxException, IOException, TimeoutException {
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(props.getProperty("rabbitServer"));
+		factory.setUsername(props.getProperty("rabbitUser"));
+		factory.setPassword(props.getProperty("rabbitPassword"));
 		return factory.newConnection();
 	}
 

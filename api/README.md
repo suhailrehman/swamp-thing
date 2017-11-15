@@ -9,12 +9,13 @@
 - [ ] Documentation
 - [ ] Unit Tests
 - [ ] Production deployment and security settings
+- [ ] Lake specific Rabbit Queues
 
 
-## Requirements
+# Requirements
 Requires virtualenv, python. The API is built using the Django REST Framework (included in the python requirements.txt). Data is written to SQLite during development.
 
-## Installation
+# Installation
 ```
 # Set up a python virtual environment
 cd api
@@ -34,5 +35,9 @@ pip install -r requirements.txt
 ./manage.py runserver
 ```
 
-## Access the API server
+
+# RabbitMQ Configuration
+Configure the RabbitMQ server URL in [server/config/settings.py](server/config/settings.py) in the variable `AQMP_URL`
+
+# Access the API server
 Once the server is running, it is accessible at http://localhost:8000/

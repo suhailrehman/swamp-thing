@@ -12,8 +12,9 @@ is an additional process that listens to the discover queue and pushes them into
 
 
 ## Requirements
-
 Documentation TODO
+
+This system requires a working RabbitMQ server with appropriate user/permissions configured correctly.
 
 ## Installation
 Requires each individual component to be installed seperately. Read the respective pages.

@@ -13,21 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
-from rest_framework.routers import DefaultRouter
-from lake.views import LakeViewSet, CrawlJobSpecViewSet
-from lake.views import CrawlJobViewSet, CrawledItemViewSet
-
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    url(r'^$', RedirectView.as_view(url='dashboard', permanent=False)),
     url(r'^admin/', admin.site.urls),
+    url(r'^api/', include('lake.urls')),
+    url(r'^dashboard/', include('dashboard.urls'))
 ]
-
-router = DefaultRouter()
-router.register(prefix='lakes', viewset=LakeViewSet)
-router.register(prefix='crawljobspecs', viewset=CrawlJobSpecViewSet)
-router.register(prefix='crawljobs', viewset=CrawlJobViewSet)
-router.register(prefix='crawleditems', viewset=CrawledItemViewSet)
-
-urlpatterns += router.urls

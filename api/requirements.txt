@@ -3,3 +3,4 @@ djangorestframework
 ipython
 pika
 django-filter
+django-adminlte2

@@ -25,7 +25,7 @@ SECRET_KEY = ')w+nm_671xaguv30zi!-(lfpib!&!fk4=@1(7yis8$63773j!q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','always.cs.uchicago.edu']
+ALLOWED_HOSTS = ['localhost', 'always.cs.uchicago.edu']
 
 
 # Application definition
@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'lake',
+    'dashboard',
+    'django_adminlte',
 ]
 
 MIDDLEWARE = [

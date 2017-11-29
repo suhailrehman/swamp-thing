@@ -76,7 +76,7 @@ class CrawledItemListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CrawledItem
-        fields = ("id", "lake", "path", "directory")
+        fields = ("id", "lake", "path", "directory", "size", "owner", "last_modified")
 
 
 class CrawledItemDetailSerializer(serializers.ModelSerializer):

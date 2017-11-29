@@ -4,7 +4,7 @@ from lake.serializers import LakeSerializer, CrawlJobSpecSerializer
 from lake.serializers import CrawlJobSerializer, CrawledItemSerializer
 from lake.serializers import CrawledItemListSerializer
 from lake.serializers import CrawledItemDetailSerializer
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 import pika
 import config.settings as settings
 from rest_framework.response import Response
@@ -12,6 +12,7 @@ from datetime import datetime
 from rest_framework.renderers import JSONRenderer
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from lake.utils import get_file_extention_counts
 
 
 class LakeViewSet(viewsets.ModelViewSet):
@@ -86,10 +87,6 @@ class CrawledItemViewSet(viewsets.ModelViewSet):
         return super(CrawledItemViewSet, self).get_serializer_class()
 
     def get_queryset(self):
-        """
-        Optionally restricts the returned purchases to a given user,
-        by filtering against a `username` query parameter in the URL.
-        """
         queryset = CrawledItem.objects.all()
         lake = self.request.query_params.get('lake', None)
         directory = self.request.query_params.get('directory', None)
@@ -99,3 +96,9 @@ class CrawledItemViewSet(viewsets.ModelViewSet):
         if directory is not None:
             queryset = queryset.filter(directory=True)
         return queryset
+
+    @list_route(methods=['get'])
+    def filetypes(self, request):
+        queryset = self.get_queryset()
+        top = self.request.query_params.get('top', None)    
+        return Response({'extensions': get_file_extention_counts(queryset, top)})

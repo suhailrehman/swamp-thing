@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import URLValidator
+# from django.core.validators import URLValidator
 import config.settings as settings
 import uuid
 
@@ -16,12 +16,15 @@ class CrawlJobSpec(models.Model):
     """ Start of a Crawl Path """
     uuid = models.UUIDField(primary_key=True,
                             default=uuid.uuid4, editable=False)
-    lake = models.ForeignKey(Lake, related_name='specs')
+    lake = models.ForeignKey(Lake, related_name='specs',
+                             on_delete=models.CASCADE)
     root_uri = models.CharField(max_length=settings.MAX_PATH_LEN)
+
     # TODO: URI Validation
     '''root_uri = models.URLField(max_length=settings.MAX_PATH_LEN,
-                               validators=[URLValidator(schemes=['hdfs', 's3'])])
+            validators=[URLValidator(schemes=['hdfs', 's3'])])
     '''
+
     exclusion_patterns = models.CharField(max_length=settings.REGEX_LEN)
     crawl_depth = models.PositiveIntegerField()
 
@@ -30,7 +33,8 @@ class CrawlJobSpec(models.Model):
 
 
 class CrawlJob(models.Model):
-    lake = models.ForeignKey(Lake, related_name='jobs')
+    lake = models.ForeignKey(Lake, related_name='jobs',
+                             on_delete=models.CASCADE)
     uuid = models.UUIDField(primary_key=True,
                             default=uuid.uuid4, editable=False)
     spec = models.ForeignKey(CrawlJobSpec)
@@ -39,7 +43,8 @@ class CrawlJob(models.Model):
 
 
 class CrawledItem(models.Model):
-    lake = models.ForeignKey(Lake, related_name='items')
+    lake = models.ForeignKey(Lake, related_name='items',
+                             on_delete=models.CASCADE)
     path = models.CharField(max_length=settings.MAX_PATH_LEN)
     directory = models.BooleanField(default=False)
     size = models.PositiveIntegerField(default=0)
@@ -49,7 +54,7 @@ class CrawledItem(models.Model):
     last_crawl = models.ForeignKey(CrawlJob, related_name='items')
     head_4k = models.CharField(max_length=8192, blank=True, null=True)
 
-    #class Meta:
+    # class Meta:
     #    unique_together = ('lake', 'path')
 
     def compare_versions(self, validated_data):

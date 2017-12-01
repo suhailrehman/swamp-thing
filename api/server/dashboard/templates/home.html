@@ -3,6 +3,187 @@
 {% block page_name %}Swamp Dashboard{% endblock %}
 
 {% block content %}
+<div class="row"> <!-- Widget Row -->
+	<div class="col-md-3 col-sm-6 col-xs-12">
+		<div class="info-box">
+			
+			<span class="info-box-icon bg-aqua"><i class="fa fa-cloud"></i></span>
 
+			<div class="info-box-content">
+				<span class="info-box-text">Lakes</span>
+				<span id="lake_count" class="info-box-number">-</span>
+			</div>
+			<!-- /.info-box-content -->
+		</div>
+		<!-- /.info-box -->
+	</div>
+	<!-- /.col -->
+	<div class="col-md-3 col-sm-6 col-xs-12">
+		<div class="info-box">
+			<span class="info-box-icon bg-green"><i class="fa fa-files-o"></i></span>
+
+			<div class="info-box-content">
+				<span class="info-box-text">Items Found</span>
+				<span id="item_count" class="info-box-number">-</span>
+			</div>
+			<!-- /.info-box-content -->
+		</div>
+		<!-- /.info-box -->
+	</div>
+	<!-- /.col -->
+	<div class="col-md-3 col-sm-6 col-xs-12">
+		<div class="info-box">
+			<span class="info-box-icon bg-yellow"><i class="fa fa-clock-o"></i></span>
+
+			<div class="info-box-content">
+				<span class="info-box-text">Last Crawl</span>
+				<span id="last_crawl_time" class="info-box-number">-</span>
+			</div>
+			<!-- /.info-box-content -->
+		</div>
+		<!-- /.info-box -->
+	</div>
+	<!-- /.col -->
+	<div class="col-md-3 col-sm-6 col-xs-12">
+		<div class="info-box">
+			<span class="info-box-icon bg-red"><i class="fa fa-cogs"></i></span>
+
+			<div class="info-box-content">
+				<span class="info-box-text">Active Crawl Targets</span>
+				<span id="crawl_jobs" class="info-box-number">-</span>
+			</div>
+			<!-- /.info-box-content -->
+		</div>
+		<!-- /.info-box -->
+	</div>
+	<!-- /.col -->
+</div><!-- End Widget Row -->
+
+<div class="row"> <!-- Table Row -->
+	<div class="col-md-12">
+		<div class="box">
+			<div class="box-header with-border">
+				<h3 class="box-title">Crawl Jobs</h3>
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+				</div> 
+			</div>
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div class="row">
+					<div class="col-md-12">
+						 <table id="example1" class="table table-bordered table-striped datatable">
+					        <thead>
+					            <tr>
+					            	<th>Lake</th>
+					                <th>Job ID</th>
+					                <th>Crawl Root</th>
+					                <th>Last Run</th>
+					                <th>Actions</th>
+					            </tr>
+					        </thead>
+			                <tbody>
+
+					        </tbody>
+		      			</table>
+					</div><!-- /.col -->
+				</div> <!-- /.row -->
+			</div> <!-- /.box-body-->
+		</div><!-- /.box -->
+	</div> <!-- /.col -->
+</div> <!-- /.row -->
+
+<div class="row"> <!-- Chart Row -->
+	<div class="col-md-12">
+		<div class="box">
+			<div class="box-header with-border">
+				<h3 class="box-title">Discovered Items</h3>
+
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+					</button>
+					<div class="btn-group">
+						<button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
+							<i class="fa fa-wrench"></i></button>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#">Action</a></li>
+								<li><a href="#">Another action</a></li>
+								<li><a href="#">Something else here</a></li>
+								<li class="divider"></li>
+								<li><a href="#">Separated link</a></li>
+							</ul>
+						</div>
+						<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+					</div>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body">
+					<div class="row">
+						<div class="col-md-12">
+							<p class="text-center">
+								<strong>Top 20 Crawled Files by Extension</strong>
+							</p>
+
+							<div class="chart">
+								<!-- Sales Chart Canvas -->
+								<canvas id="barChart" style="height:230px"></canvas>
+							</div>
+							<!-- /.chart-responsive -->
+						</div>
+						<!-- /.col -->
+					</div> <!-- /.row -->
+				</div>
+			</div> <!-- /.box-body-->
+		</div><!-- /.box -->
+	</div><!-- End Chart Row-->
+
+{% endblock %}
+
+{% block extra_foot %}
+<script type="text/javascript">
+
+/* Load Metadata */
+$.getJSON( "/api/meta", function( data ){
+
+  $("#lake_count").text(data["num_lakes"]);
+  $("#item_count").text(data["num_items"]);
+  $("#last_crawl_time").text(data["last_crawl"]+" UTC");
+  $("#crawl_jobs").text(data["total_jobs"]);
+});
+
+/* TODO: Load CrawlJob Table */
+
+
+/* Load Filetypes Crawled */
+$.getJSON( "/api/crawleditems/filetypes/?top=20", function( data ) {
+	var mychart = document.getElementById("barChart").getContext("2d");
+
+
+	var default_colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
+
+	filelabels = data['extensions'].map(function(value,index) {if(value[0] != "") retval = value[0]; else retval="<blank>"; return retval;});
+	filevalues = data['extensions'].map(function(value,index) {return value[1];});
+
+	new Chart(mychart, {
+		type: 'bar',
+		data: {
+			labels: filelabels,
+			datasets: [
+			{
+				label: "Number of Files",
+				data: filevalues, 
+				backgroundColor: default_colors
+			}
+			]
+		},
+		options: {
+
+			legend:{display: false}
+		}
+	});
+})
+</script>
 
 {% endblock %}

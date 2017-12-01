@@ -100,5 +100,23 @@ class CrawledItemViewSet(viewsets.ModelViewSet):
     @list_route(methods=['get'])
     def filetypes(self, request):
         queryset = self.get_queryset()
-        top = self.request.query_params.get('top', None)    
+        top = self.request.query_params.get('top', None)
         return Response({'extensions': get_file_extention_counts(queryset, top)})
+
+
+class MetaViewSet(viewsets.ViewSet):
+    """
+    A simple ViewSet for metadata about the system
+    """
+    queryset = Lake.objects.all()
+
+    def list(self, request):
+        num_lakes = Lake.objects.count()
+        num_items = CrawledItem.objects.count()
+        last_crawl = CrawlJob.objects.latest(field_name='start_time').start_time.strftime('%Y-%m-%d %H:%M')
+        total_jobs = CrawlJob.objects.count()
+
+        return Response({'num_lakes': num_lakes,
+                         'num_items': num_items,
+                         'last_crawl': last_crawl,
+                         'total_jobs': total_jobs})

@@ -17,6 +17,7 @@ Including another URLconf
 from rest_framework.routers import DefaultRouter
 from lake.views import LakeViewSet, CrawlJobSpecViewSet
 from lake.views import CrawlJobViewSet, CrawledItemViewSet
+from lake.views import MetaViewSet
 
 # Lake API Router
 
@@ -27,6 +28,7 @@ router.register(prefix='lakes', viewset=LakeViewSet)
 router.register(prefix='crawljobspecs', viewset=CrawlJobSpecViewSet)
 router.register(prefix='crawljobs', viewset=CrawlJobViewSet)
 router.register(prefix='crawleditems', viewset=CrawledItemViewSet)
+router.register(prefix='meta', viewset=MetaViewSet)
 
 urlpatterns = []
 urlpatterns += router.urls

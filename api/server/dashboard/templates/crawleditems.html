@@ -1,5 +1,74 @@
 {% extends 'base.html' %}
 
+{% block extra_head %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
+{% endblock %}
 {% block page_name %}Crawled Items{% endblock %}
 {% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Crawled Item List</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table id="crawleditemstable" class="table table-bordered table-striped datatable">
+		        <thead>
+		            <tr>
+		            	<th>Lake</th>
+		                <th>Path</th>
+		                <th>Directory?</th>
+		                <th>Size</th>
+		                <th>Last Modified</th>
+		                <th>Owner</th>
+		            </tr>
+		        </thead>
+                <tbody>
+
+		        </tbody>
+		      </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+	</div> <!-- .col -->
+</div> <!-- .row -->
 {% endblock %}
+
+
+{% block extra_foot %}
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+<script>
+$.getJSON("/api/crawleditems/", function( dataset ) {
+ 
+
+    $('#crawleditemstable').DataTable({
+        "data": dataset,
+        "columns": [{
+            "data": "lake"
+        }, {
+            "data": "path"
+        }, {
+            "data": "directory"
+        }, {
+            "data": "size"
+        }, {
+            "data": "last_modified"
+        }, {
+            "data": "owner"
+        },  
+        ],
+        'paging'      : true,
+      'lengthChange': true,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true
+    });
+});
+
+</script>
+{% endblock %}
+
+

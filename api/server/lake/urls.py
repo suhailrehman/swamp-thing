@@ -15,7 +15,7 @@ Including another URLconf
 """
 # from django.conf.urls import url, include
 from rest_framework.routers import DefaultRouter
-from lake.views import LakeViewSet, CrawlJobSpecViewSet
+from lake.views import LakeViewSet
 from lake.views import CrawlJobViewSet, CrawledItemViewSet
 from lake.views import MetaViewSet
 
@@ -25,10 +25,9 @@ app_name = 'api'
 
 router = DefaultRouter()
 router.register(prefix='lakes', viewset=LakeViewSet)
-router.register(prefix='crawljobspecs', viewset=CrawlJobSpecViewSet)
 router.register(prefix='crawljobs', viewset=CrawlJobViewSet)
 router.register(prefix='crawleditems', viewset=CrawledItemViewSet)
-router.register(prefix='meta', viewset=MetaViewSet)
+router.register(prefix='meta', base_name='meta', viewset=MetaViewSet)
 
 urlpatterns = []
 urlpatterns += router.urls

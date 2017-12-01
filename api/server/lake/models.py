@@ -12,12 +12,14 @@ class Lake(models.Model):
         return self.name
 
 
-class CrawlJobSpec(models.Model):
-    """ Start of a Crawl Path """
+class CrawlJob(models.Model):
+    lake = models.ForeignKey(Lake, related_name='jobs',
+                             on_delete=models.CASCADE)
     uuid = models.UUIDField(primary_key=True,
                             default=uuid.uuid4, editable=False)
-    lake = models.ForeignKey(Lake, related_name='specs',
-                             on_delete=models.CASCADE)
+    start_time = models.DateTimeField(null=True)
+    running = models.BooleanField(default=False)
+
     root_uri = models.CharField(max_length=settings.MAX_PATH_LEN)
 
     # TODO: URI Validation
@@ -30,16 +32,6 @@ class CrawlJobSpec(models.Model):
 
     def __str__(self):
         return str(self.uuid) + " (Lake: " + str(self.lake.name) + ")"
-
-
-class CrawlJob(models.Model):
-    lake = models.ForeignKey(Lake, related_name='jobs',
-                             on_delete=models.CASCADE)
-    uuid = models.UUIDField(primary_key=True,
-                            default=uuid.uuid4, editable=False)
-    spec = models.ForeignKey(CrawlJobSpec)
-    start_time = models.DateTimeField(null=True)
-    running = models.BooleanField(default=False)
 
 
 class CrawledItem(models.Model):

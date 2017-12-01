@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from lake.models import Lake, CrawlJobSpec, CrawlJob, CrawledItem
-from lake.serializers import LakeSerializer, CrawlJobSpecSerializer
+from lake.models import Lake, CrawlJob, CrawledItem
+from lake.serializers import LakeSerializer
 from lake.serializers import CrawlJobSerializer, CrawledItemSerializer
 from lake.serializers import CrawledItemListSerializer
 from lake.serializers import CrawledItemDetailSerializer
@@ -13,6 +13,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from lake.utils import get_file_extention_counts
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class LakeViewSet(viewsets.ModelViewSet):
@@ -24,12 +25,6 @@ class LakeViewSet(viewsets.ModelViewSet):
     search_fields = ('name',)
 
 
-class CrawlJobSpecViewSet(viewsets.ModelViewSet):
-    """ ViewSet for viewing and editing CrawlJobSpec objects """
-    queryset = CrawlJobSpec.objects.all()
-    serializer_class = CrawlJobSpecSerializer
-
-
 class CrawlJobViewSet(viewsets.ModelViewSet):
     """ ViewSet for viewing and editing CrawlJob objects """
     queryset = CrawlJob.objects.all()
@@ -39,10 +34,8 @@ class CrawlJobViewSet(viewsets.ModelViewSet):
     def start(self, request, pk=None):
         # TODO: Validation and Exception Handlers
         crawljob = self.get_object()
-        jobspec_serializer = CrawlJobSpecSerializer(crawljob.spec)
 
-        output_data = jobspec_serializer.data
-        output_data['last_crawl'] = crawljob.uuid
+        output_data = CrawlJobSerializer(crawljob).data
         connection = pika.BlockingConnection(
             pika.URLParameters(settings.AQMP_URL))
         channel = connection.channel()
@@ -108,12 +101,14 @@ class MetaViewSet(viewsets.ViewSet):
     """
     A simple ViewSet for metadata about the system
     """
-    queryset = Lake.objects.all()
 
     def list(self, request):
         num_lakes = Lake.objects.count()
         num_items = CrawledItem.objects.count()
-        last_crawl = CrawlJob.objects.latest(field_name='start_time').start_time.strftime('%Y-%m-%d %H:%M')
+        try:
+            last_crawl = CrawlJob.objects.latest(field_name='start_time').start_time.strftime('%Y-%m-%d %H:%M')
+        except ObjectDoesNotExist:
+            last_crawl = 'None'
         total_jobs = CrawlJob.objects.count()
 
         return Response({'num_lakes': num_lakes,

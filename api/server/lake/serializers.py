@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from lake.models import Lake, CrawlJobSpec, CrawlJob, CrawledItem
+from lake.models import Lake, CrawlJob, CrawledItem
 import pika
 import config.settings as settings
 from rest_framework.renderers import JSONRenderer
@@ -13,20 +13,13 @@ class LakeSerializer(serializers.ModelSerializer):
         fields = ["name"]
 
 
-class CrawlJobSpecSerializer(serializers.ModelSerializer):
-    """ Serializer to represent the Store model """
-    class Meta:
-        model = CrawlJobSpec
-        fields = ("uuid", "lake", "root_uri",
-                  "exclusion_patterns", "crawl_depth")
-
-
 class CrawlJobSerializer(serializers.ModelSerializer):
     """ Serializer to represent the Store model """
     class Meta:
         model = CrawlJob
         fields = (
-            "lake", "uuid", "spec", "running", "start_time"
+            "lake", "uuid", "running", "start_time", "root_uri",
+            "exclusion_patterns", "crawl_depth"
         )
         read_only_fields = ('start_time', 'running')
 

@@ -8,7 +8,6 @@ import java.security.NoSuchAlgorithmException;
 
 import java.util.Base64;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
@@ -22,7 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
@@ -88,7 +86,6 @@ public class Main {
 	    		logger.trace("Received on Crawl Queue: '" + message + "'");
 
 	    		CrawlJobSpec spec = gson.fromJson(message, CrawlJobSpec.class);
-	    		UUID last_crawl = UUID.fromString(gson.fromJson(message, JsonObject.class).get("last_crawl").getAsString());
 	    		
 	    		//Setup the appropriate FileSystem based on incoming URI
 	    		FileSystem fs;
@@ -98,7 +95,7 @@ public class Main {
 
 	    		Crawler crawler = new Crawler(fs);
 	    		crawler.addExclusionPattern(Pattern.compile(spec.getExclusion_patterns()));
-	    		crawler.setLast_crawl(last_crawl);
+	    		crawler.setLast_crawl(spec.uuid);
 
 	    		crawler.crawlTarget(spec);
 	    		
@@ -124,12 +121,10 @@ public class Main {
 	    						spec.getCrawl_depth() - 1, spec.getExclusion_patterns());
 	    				
 	    				JsonElement jsonElement = gson.toJsonTree(newspec);
-	    				jsonElement.getAsJsonObject().addProperty("last_crawl", last_crawl.toString());
 	    				
 	    				channel.basicPublish("", props.getProperty("crawlQueueName"), null, gson.toJson(jsonElement).getBytes());
 	    			}
 	    		}
-	    		
 	    		
 
 	    		

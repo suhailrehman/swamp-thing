@@ -15,7 +15,7 @@ def callback(ch, method, properties, body):
     print("New Item on Queue")
 
     try:
-        req = urllib2.Request('http://' + API_SERVER + ':' + str(API_PORT) + '/crawleditems/')
+        req = urllib2.Request('http://' + API_SERVER + ':' + str(API_PORT) + '/api/crawleditems/')
         req.add_header('Content-Type', 'application/json')
         urllib2.urlopen(req, body)
     except urllib2.HTTPError as e:

@@ -2,11 +2,20 @@ from django.db import models
 # from django.core.validators import URLValidator
 import config.settings as settings
 import uuid
+from utils import get_default_aqmp_url
 
 
 class Lake(models.Model):
     """ Data Lake Model """
     name = models.CharField(primary_key=True, max_length=100, unique=True)
+    aqmp_url = models.CharField(max_length=settings.MAX_PATH_LEN, null=False,
+                                default=get_default_aqmp_url())
+    crawl_queue_name = models.CharField(
+        max_length=settings.MAX_PATH_LEN, default='crawl')
+    discover_queue_name = models.CharField(
+        max_length=settings.MAX_PATH_LEN, default='discover')
+    update_queue_name = models.CharField(
+        max_length=settings.MAX_PATH_LEN, default='update')
 
     def __str__(self):
         return self.name
@@ -18,7 +27,6 @@ class CrawlJob(models.Model):
     uuid = models.UUIDField(primary_key=True,
                             default=uuid.uuid4, editable=False)
     start_time = models.DateTimeField(null=True)
-    running = models.BooleanField(default=False)
 
     root_uri = models.CharField(max_length=settings.MAX_PATH_LEN)
 

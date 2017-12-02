@@ -4,27 +4,24 @@
 
 {% block content %}
 <div class="row">
-        <div class="col-xs-4">
+        <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
               <h3 class="box-title">Data Lakes</h3>
             </div>
             <!-- /.box-header -->
-            <div class="box-body table-responsive no-padding">
-              <table class="table table-hover">
-                <tbody id="laketable"><tr>
-                  <th>ID</th>
+            <div class="box-body">
+              <table id="lakestable" class="table table-hover table-bordered table-striped datatable">
+              	<thead>
+                <tr>
                   <th>Lake Name</th>
+                  <th>AQMP URL</th>
+                  <th>Crawl Queue Name</th>
+                  <th>Discover Queue Name</th>
+                  <th>Update Queue Name</th>
                 </tr>
-                <tr>
-                  <td>1</td>
-                  <td>GlobusLake</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>HDFSLakeNUC</td>
-                </tr>
-              </tbody></table>
+            </thead>
+              <tbody></tbody></table>
             </div>
             <!-- /.box-body -->
           </div>
@@ -32,4 +29,36 @@
         </div>
       </div>
 
+{% endblock %}
+
+
+{% block extra_foot %}
+<script>
+$.getJSON("/api/lakes/", function( dataset ) {
+ 
+
+    $('#lakestable').DataTable({
+        "data": dataset,
+        "columns": [{
+            "data": "name"
+        }, {
+            "data": "aqmp_url"
+        }, {
+            "data": "crawl_queue_name"
+        }, {
+            "data": "discover_queue_name"
+        }, {
+            "data": "update_queue_name"
+        }, 
+        ],
+        'paging'      : false,
+      'lengthChange': true,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true
+    });
+});
+
+</script>
 {% endblock %}

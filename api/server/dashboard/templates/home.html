@@ -72,24 +72,20 @@
 			</div>
 			<!-- /.box-header -->
 			<div class="box-body">
-				<div class="row">
-					<div class="col-md-12">
-						 <table id="example1" class="table table-bordered table-striped datatable">
-					        <thead>
-					            <tr>
-					            	<th>Lake</th>
-					                <th>Job ID</th>
-					                <th>Crawl Root</th>
-					                <th>Last Run</th>
-					                <th>Actions</th>
-					            </tr>
-					        </thead>
-			                <tbody>
+				<table id="jobstable" class="table table-bordered table-striped datatable table-responsive	">
+			        <thead>
+			            <tr>
+			            	<th>Lake</th>
+			                <th>Job ID</th>
+			                <th>Crawl Root</th>
+			                <th>Last Run</th>
+			                <th>Actions</th>
+			            </tr>
+			        </thead>
+	                <tbody>
 
-					        </tbody>
-		      			</table>
-					</div><!-- /.col -->
-				</div> <!-- /.row -->
+			        </tbody>
+	  			</table>
 			</div> <!-- /.box-body-->
 		</div><!-- /.box -->
 	</div> <!-- /.col -->
@@ -143,7 +139,6 @@
 
 {% block extra_foot %}
 <script type="text/javascript">
-
 /* Load Metadata */
 $.getJSON( "/api/meta", function( data ){
 
@@ -153,8 +148,53 @@ $.getJSON( "/api/meta", function( data ){
   $("#crawl_jobs").text(data["total_jobs"]);
 });
 
-/* TODO: Load CrawlJob Table */
+/* Load CrawlJob Table */
+$.getJSON("/api/crawljobs/", function( dataset ) {
+ 
 
+    var table = $('#jobstable').DataTable({
+        "data": dataset,
+        "columns": [{
+            "data": "lake"
+        }, {
+            "data": "uuid"
+        }, {
+            "data": "root_uri"
+        }, {
+            "data": "start_time"
+        },
+        {
+            "defaultContent": "<button>Start Crawl</button>"
+        } 
+        ],
+      'paging'      : false,
+      'lengthChange': true,
+      'searching'   : false,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true,
+      'responsive': true,
+    });
+
+    $('#jobstable tbody').on( 'click', 'button', function () {
+    	var uuid = table.row($(this).parents('tr')).data()['uuid'];
+    	var jqxhr = $.post( "/api/crawljobs/"+uuid+"/start/", function() {
+    		alert( "Submitted" );
+    	})
+    	.done(function() {
+    		alert( "Job Pushed to Queue" );
+    	})
+    	.fail(function(data) {
+    		alert( "Error from Server Pushing to Queue"+ data );
+    	})
+    	.always(function() {
+    		alert( "finished" );
+    	});
+    } );
+
+});
+
+/* Start Crawl Action Button */
 
 /* Load Filetypes Crawled */
 $.getJSON( "/api/crawleditems/filetypes/?top=20", function( data ) {

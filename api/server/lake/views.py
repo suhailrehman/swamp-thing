@@ -37,11 +37,11 @@ class CrawlJobViewSet(viewsets.ModelViewSet):
 
         output_data = CrawlJobSerializer(crawljob).data
         connection = pika.BlockingConnection(
-            pika.URLParameters(settings.AQMP_URL))
+            pika.URLParameters(crawljob.lake.aqmp_url))
         channel = connection.channel()
-        channel.queue_declare(queue='crawl')
+        channel.queue_declare(queue=crawljob.lake.crawl_queue_name)
         channel.basic_publish(exchange='',
-                              routing_key='crawl',
+                              routing_key=crawljob.lake.crawl_queue_name,
                               body=JSONRenderer().render(output_data))
         crawljob.running = True
         crawljob.start_time = datetime.now()
@@ -107,7 +107,7 @@ class MetaViewSet(viewsets.ViewSet):
         num_items = CrawledItem.objects.count()
         try:
             last_crawl = CrawlJob.objects.latest(field_name='start_time').start_time.strftime('%Y-%m-%d %H:%M')
-        except ObjectDoesNotExist:
+        except Exception:
             last_crawl = 'None'
         total_jobs = CrawlJob.objects.count()
 

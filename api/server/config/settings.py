@@ -26,7 +26,7 @@ SECRET_KEY = ')w+nm_671xaguv30zi!-(lfpib!&!fk4=@1(7yis8$63773j!q'
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', 'always.cs.uchicago.edu']
-
+CURRENT_HOSTNAME = 'always.cs.uchicago.edu'
 
 # Application definition
 

@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 
-{% block extra_head %}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
-{% endblock %}
 {% block page_name %}Crawled Items{% endblock %}
 {% block content %}
 <div class="row">
@@ -37,8 +34,6 @@
 
 
 {% block extra_foot %}
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
 <script>
 $.getJSON("/api/crawleditems/", function( dataset ) {
  

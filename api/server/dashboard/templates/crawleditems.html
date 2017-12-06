@@ -10,7 +10,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table id="crawleditemstable" class="table table-bordered table-striped datatable">
+              <table id="crawleditemstable" class="table table-bordered table-striped datatable responsive">
 		        <thead>
 		            <tr>
 		            	<th>Lake</th>
@@ -59,7 +59,8 @@ $.getJSON("/api/crawleditems/", function( dataset ) {
       'searching'   : true,
       'ordering'    : true,
       'info'        : true,
-      'autoWidth'   : true
+      'autoWidth'   : true,
+      'responsive'  : true
     });
 });
 

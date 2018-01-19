@@ -24,8 +24,9 @@ is a java server program that listens on a specific Rabbit Queue (by default, na
 is an additional process that listens to the discover queue and pushes them into the API database. Can be eliminited/integrated into the Crawler code or given more responsibility in the future.
 
 
-## Requirements
+## Installation
 
+### Prerequisites
 This system requires a working RabbitMQ server with appropriate user/permissions configured correctly for each Data lake that is to be crawled by this system.
 
 Installation Instructions for RabbitMQ and management interface:
@@ -34,19 +35,21 @@ sudo apt install rabbitmq-server
 rabbitmq-plugins enable rabbitmq_management
 ```
 
-Visit `http://localhost:15672/` and configure a user/password of your choice. The default used in all our configuration files is `app:app`. Thus the default AQMP URL used is
+Visit `http://localhost:15672/` and configure a user/password of your choice. The default used in all our configuration files is `app:app`. Thus the default AQMP URL used is `amqp://app:app@server-name:5672/server-name`
 
 Additionally, Python version 2.7 with pip virutalenv is required to deploy the front-end API/dashboard. If not already installed, it can be installed as follows:
 ```
 sudo apt install python-pip
 sudo pip install virtualenv
 ```
-
 The crawler requires a working Maven installation to deploy. The app has been tested with Maven 3.3.9
 
+### Setting up and Installing the Crawler Components
 
-## Installation
-Requires each individual component to be installed seperately. Read the respective pages.
+Refer to the individual component installations one-by-one:
+[Front-End API](api/README.md)
+[Crawler](crawler/README.md)
+[Controller](controller/README.md)
 
 
 ## End-to-End Functional Demo Instructions

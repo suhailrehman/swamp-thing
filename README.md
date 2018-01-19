@@ -47,8 +47,11 @@ The crawler requires a working Maven installation to deploy. The app has been te
 ### Setting up and Installing the Crawler Components
 
 Refer to the individual component installations one-by-one:
+
 [Front-End API](api/README.md)
+
 [Crawler](crawler/README.md)
+
 [Controller](controller/README.md)
 
 

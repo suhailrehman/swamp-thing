@@ -4,6 +4,9 @@ Filesystem Crawler for the Data Swamp.
 
 ## System Design
 
+![Swamp Thing Diagram](swampthing.png?raw=true "Swamp Thing Diagram")
+
+
 The crawler is designed with multiple microservices, that communicate with each other using RabbitMQ. The data model used for this system is as follows.
 
 * A data lake consists of multiple filesystems that can be crawled and indexed together. Each data lake requires the creation of a specific RabbitMQ app/password/channel on which multiple queues are managed.

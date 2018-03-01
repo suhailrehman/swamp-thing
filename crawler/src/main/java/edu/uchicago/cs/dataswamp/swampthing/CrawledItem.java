@@ -5,10 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -40,6 +42,24 @@ public class CrawledItem {
         OutputStream os = new BufferedOutputStream(new FileOutputStream(localpath));
         IOUtils.copyBytes(is, os, fs.getConf());	
         IOUtils.copyBytes(is, os, size, true);
+	}
+	
+	@SuppressWarnings("unused")
+	private void copyFileToS3(String crawledPath, String bucketName, String keyPrefix, FileSystem fs, long size) throws IOException
+	{
+		InputStream is = fs.open(new Path(crawledPath));
+		
+	    FileSystem outputS3 = FileSystem.get(URI.create("s3a://"), fs.getConf());
+	    FSDataOutputStream outputStream = outputS3.create(new Path("s3a://"+bucketName+"/"+keyPrefix+"/"+this.path), true);
+	    
+	    try {
+	    	IOUtils.copyBytes(is, outputStream, fs.getConf());	
+	        IOUtils.copyBytes(is, outputStream, size, true);
+	    }
+	    finally {
+	      outputStream.close();
+	    }
+	    
 	}
 	
 	
@@ -93,6 +113,34 @@ public class CrawledItem {
 			}
 		}
 		*/
+		
+	}
+	
+	// Constructor that creates a full copy to S3 bucket
+	public CrawledItem(FileSystem fs, FileStatus filestatus, String bucketName, String keyPrefix, boolean fullCopy)
+	{
+		super();
+		this.path = filestatus.getPath().toString();
+		this.size = filestatus.getLen();
+		this.directory = filestatus.isDirectory();
+		this.owner = filestatus.getOwner();
+		this.group = filestatus.getGroup();
+		this.last_modified = Date.from(Instant.ofEpochMilli(filestatus.getModificationTime()));
+		this.head_4k = null;
+		
+		if(!this.isDirectory())
+		{
+			try {
+				if(fullCopy)
+					copyFileToS3(this.path, bucketName, keyPrefix, fs, this.size);
+				else
+					copyFileToS3(this.path, bucketName, keyPrefix, fs, HEADER_SIZE);
+			} catch (IOException e) {
+				System.err.println("WARNING, unable to copy header contents of file: "+ this.path);
+				e.printStackTrace();
+			}
+		}
+		
 		
 	}
 

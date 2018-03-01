@@ -1,7 +1,6 @@
 # swamp-thing
 Filesystem Crawler for the Data Swamp.
 
-
 ## System Design
 
 ![Swamp Thing Diagram](swampthing.png?raw=true "Swamp Thing Diagram")
@@ -84,3 +83,13 @@ Refer to the individual component installations one-by-one:
 ## Integrating Downstream Analytics
 
 The Datalake API is extensible and more items can be modelled with FQ relationships to CrawledItems. Furthermore, downstream processing can be enabled by listening the the `discover` queue using the same AQMP URL for newly discovered items, as well as an `update` queue which can be used to keep track of items that have been updated since the last crawl.
+
+
+## Changelog
+
+### 03/01/2018
+* Added new branch ceres/demo_s18 for Skluma Integration
+* TODO: Treemap generation code added to utilities
+* TODO: Crawler supports S3 file export
+* TODO: Model update to store Skluma output
+* TODO: Supporting Code for visualization of Skluma output

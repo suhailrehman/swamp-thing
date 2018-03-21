@@ -78,7 +78,7 @@ class CrawledItem(models.Model):
 
 class StructredColumn(models.Model):
     name = models.CharField(max_length=settings.MAX_PATH_LEN)
-    crawled_item = models.ForeignKey(CrawledItem, related_name="column_set")
+    crawled_item = models.ForeignKey(CrawledItem, related_name="columns")
 
     prec = models.FloatField(null=True)
     minimum = models.FloatField(null=True)
@@ -117,3 +117,11 @@ class StructredColumn(models.Model):
     )
 
 
+class Topic(models.Model):
+    topic_word = models.CharField(max_length=settings.MAX_PATH_LEN)
+    crawled_item = models.ManyToManyField(CrawledItem, related_name="topics")
+
+
+class Keyword(models.Model):
+    keyword = models.CharField(max_length=settings.MAX_PATH_LEN)
+    crawled_item = models.ManyToManyField(CrawledItem, related_name="keywords")

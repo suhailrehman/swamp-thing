@@ -78,34 +78,42 @@ class CrawledItem(models.Model):
 
 class StructredColumn(models.Model):
     name = models.CharField(max_length=settings.MAX_PATH_LEN)
-    crawled_item = models.ForeignKey(CrawledItem, related_name="%(class)s_set")
+    crawled_item = models.ForeignKey(CrawledItem, related_name="column_set")
 
-    class Meta:
-        abstract = True
-
-
-class StringColumn(StructredColumn):
-    maxlen = models.PositiveIntegerField(default=100)
-
-
-class DateTimeColumn(StructredColumn):
-    early = models.DateTimeField(null=True)
-    late = models.DateTimeField(null=True)
-
-
-class BaseFloatColumn(StructredColumn):
     prec = models.FloatField(null=True)
     minimum = models.FloatField(null=True)
     maximum = models.FloatField(null=True)
     average = models.FloatField(null=True)
     nullval = models.FloatField(null=True)
+    early = models.DateTimeField(null=True)
+    late = models.DateTimeField(null=True)
 
+    LATSTD = 'LATSTD'
+    LONSTD = 'LONSTD'
+    LATEW = 'LATEW'
+    LONEW = 'LONEW'
+    INT = 'INT'
+    FLOAT = 'FLOAT'
+    STRING = 'STRING'
+    DATETIME = 'DATETIME'
+    NONE = 'NONE'
 
-class GeoColumn(BaseFloatColumn):
-    LAT = 'LAT'
-    LON = 'LON'
-    geotype = models.CharField(
+    TYPE_CHOICES = (
+        (LATSTD, 'Latitude Standard'),
+        (LONSTD,'Longitude Standard'),
+        (LATEW, 'Latitude E/W'),
+        (LONEW, 'Longitude E/W'),
+        (INT, 'Integer'),
+        (FLOAT, 'Floating Point'),
+        (STRING, 'String'),
+        (DATETIME, 'Date / Time'),
+        (NONE, 'None'),
+        )
+
+    coltype = models.CharField(
         max_length=3,
-        choices=((LAT, 'Latitude'), (LON, 'Longitude')),
-        default=LAT,
+        choices=TYPE_CHOICES,
+        default=NONE,
     )
+
+

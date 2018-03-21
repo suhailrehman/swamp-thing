@@ -74,3 +74,38 @@ class CrawledItem(models.Model):
         (S3, 'S3')
     )
     '''
+
+
+class StructredColumn(models.Model):
+    name = models.CharField(max_length=settings.MAX_PATH_LEN)
+    crawled_item = models.ForeignKey(CrawledItem, related_name="%(class)s_set")
+
+    class Meta:
+        abstract = True
+
+
+class StringColumn(StructredColumn):
+    maxlen = models.PositiveIntegerField(default=100)
+
+
+class DateTimeColumn(StructredColumn):
+    early = models.DateTimeField(null=True)
+    late = models.DateTimeField(null=True)
+
+
+class BaseFloatColumn(StructredColumn):
+    prec = models.FloatField(null=True)
+    minimum = models.FloatField(null=True)
+    maximum = models.FloatField(null=True)
+    average = models.FloatField(null=True)
+    nullval = models.FloatField(null=True)
+
+
+class GeoColumn(BaseFloatColumn):
+    LAT = 'LAT'
+    LON = 'LON'
+    geotype = models.CharField(
+        max_length=3,
+        choices=((LAT, 'Latitude'), (LON, 'Longitude')),
+        default=LAT,
+    )

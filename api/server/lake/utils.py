@@ -19,6 +19,7 @@ def get_default_aqmp_url():
 
 
 # TODO: Cleanup or move method to better location
+# Recursive function to parse pathname and construct a nested treemap dict
 def attach(path_name, root, size, dir):
     '''
     Insert a path_name of directories on its root.

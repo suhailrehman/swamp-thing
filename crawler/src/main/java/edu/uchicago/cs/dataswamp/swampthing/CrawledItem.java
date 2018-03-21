@@ -116,7 +116,7 @@ public class CrawledItem {
 		
 	}
 	
-	// Constructor that creates a full copy to S3 bucket
+	// Constructor that creates a full copy to S3 bucket - full/copy copies entire file 
 	public CrawledItem(FileSystem fs, FileStatus filestatus, String bucketName, String keyPrefix, boolean fullCopy)
 	{
 		super();

@@ -75,8 +75,11 @@ class CrawledItem(models.Model):
     )
     '''
 
+    def __str__(self):
+        return str(self.path) + " (Lake: "+str(self.lake.name)+")"
 
-class StructredColumn(models.Model):
+
+class StructuredColumn(models.Model):
     name = models.CharField(max_length=settings.MAX_PATH_LEN)
     crawled_item = models.ForeignKey(CrawledItem, related_name="columns")
 
@@ -84,19 +87,22 @@ class StructredColumn(models.Model):
     minimum = models.FloatField(null=True)
     maximum = models.FloatField(null=True)
     average = models.FloatField(null=True)
-    nullval = models.FloatField(null=True)
+    nullval = models.CharField(max_length=settings.MAX_PATH_LEN, null=True)
     early = models.DateTimeField(null=True)
     late = models.DateTimeField(null=True)
 
-    LATSTD = 'LATSTD'
-    LONSTD = 'LONSTD'
-    LATEW = 'LATEW'
-    LONEW = 'LONEW'
-    INT = 'INT'
-    FLOAT = 'FLOAT'
-    STRING = 'STRING'
-    DATETIME = 'DATETIME'
-    NONE = 'NONE'
+
+    LATSTD = 'lat-std'
+    LONSTD = 'lon-std'
+    LATEW = 'lat-ew'
+    LONEW = 'lon-ew'
+    INT = 'int'
+    FLOAT = 'float'
+    STRING = 'string'
+    DATETIME = 'datetime'
+    NONE = 'none'
+    UNKNOWN = 'unknown'
+    UUID = 'uuid'
 
     TYPE_CHOICES = (
         (LATSTD, 'Latitude Standard'),
@@ -108,20 +114,36 @@ class StructredColumn(models.Model):
         (STRING, 'String'),
         (DATETIME, 'Date / Time'),
         (NONE, 'None'),
+        (UNKNOWN, 'Unknown Column'),
+        (UUID, 'uuid')
         )
 
     coltype = models.CharField(
-        max_length=3,
+        max_length=10,
         choices=TYPE_CHOICES,
         default=NONE,
     )
+    
+    class Meta:
+        unique_together = ('name', 'crawled_item')
 
 
 class Topic(models.Model):
-    topic_word = models.CharField(max_length=settings.MAX_PATH_LEN)
+    topic_word = models.CharField(max_length=settings.MAX_PATH_LEN, unique=True)
     crawled_item = models.ManyToManyField(CrawledItem, related_name="topics")
 
 
 class Keyword(models.Model):
-    keyword = models.CharField(max_length=settings.MAX_PATH_LEN)
-    crawled_item = models.ManyToManyField(CrawledItem, related_name="keywords")
+    keyword = models.CharField(max_length=settings.MAX_PATH_LEN, unique=True)
+    
+    def __str__(self):
+        return str(self.keyword)
+
+
+class KeywordScore(models.Model):
+    keyword = models.ForeignKey(Keyword, related_name="scores") 
+    score = models.FloatField(null=True)
+    crawled_item = models.ForeignKey(CrawledItem, related_name="keywordscores")
+
+    class Meta:
+        unique_together = ('keyword', 'crawled_item')

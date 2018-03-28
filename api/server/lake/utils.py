@@ -1,6 +1,9 @@
-import os
+import os, json
 from collections import Counter
 from config import settings
+
+#from lake.models import CrawledItem
+#from lake.serializers import StructuredColumnSerializer, TopicSerializer, KeywordSerializer
 
 
 def get_file_extention_counts(queryset, top):
@@ -84,3 +87,68 @@ def generate_treemap_data(queryset):
         attach(item.path, return_list, item.size, item.directory)
 
     return return_list
+
+
+'''
+def skluma_serializer():
+
+    #debug 
+    json_data = open('/home/suhail/Scratch/sample.json').read()
+    data = json.loads(json_data)
+
+    #top-level metadata
+    metadata = data['metadata']
+    file_path = metadata['file']['path']
+    #TODO Search for file path in catalog, or create if it doesnt exist
+    crawled_item = CrawledItem.objects.get(path=file_path)
+
+
+    #extractors
+    columns = data['extractors']['ex_structured']['cols']
+
+    #For each Column:
+    #TODO Handle already existing columns
+    for colname, colproperties in columns.iteritems():
+        
+        column = {}
+        column['name'] = colname
+        column['crawled_item'] = crawled_item.path
+
+        #Copy over field properties
+        for prop, value in colproperties.iteritems():
+            column[prop] = value
+
+        #Hopefully the column serializes
+        serialized_column = StructuredColumnSerializer(data=column)
+        if(serialized_column.is_valid()):
+            serialized_column.save()
+
+
+'''
+'''
+    #topics
+    topics = data['extractors']['ex_freetext']['topics']
+    for topic in topics:
+        topic_object = {}
+        topic_object['topic_word'] = topic
+        topic_object['crawled_item'] = crawled_item.path
+
+        serialized_topic = TopicSerializer(data=topic_object)
+        if(serialized_topic.is_valid()):
+            serialized_topic.save()
+
+
+    #keywords
+    keywords = data['extractors']['ex_freetext']['keywords']
+    for keyword, score in keywords:
+        keyword_object = {}
+        keyword_object['keyword'] = keyword
+        keyword_object['score'] = score
+
+        serialized_keyword = KeywordSerializer(data=keyword_object)
+        if(serialized_keyword.is_valid()):
+            serialized_keyword.save()
+'''
+
+
+

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from lake.models import Lake, CrawlJob, CrawledItem
+from lake.models import *
 import pika
 from rest_framework.renderers import JSONRenderer
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,7 +7,7 @@ from utils import *
 
 
 class LakeSerializer(serializers.ModelSerializer):
-    """ Serializer to represent the Chain model """
+    """ Serializer to represent a Lake """
     aqmp_url = serializers.CharField(initial=get_default_aqmp_url())
     crawl_queue_name = serializers.CharField(initial="crawl")
     discover_queue_name = serializers.CharField(initial="discover")
@@ -22,7 +22,7 @@ class LakeSerializer(serializers.ModelSerializer):
 
 
 class CrawlJobSerializer(serializers.ModelSerializer):
-    """ Serializer to represent the Store model """
+    """ Serializer to represent a CrawlJob """
     class Meta:
         model = CrawlJob
         fields = (
@@ -33,7 +33,7 @@ class CrawlJobSerializer(serializers.ModelSerializer):
 
 
 class CrawledItemSerializer(serializers.ModelSerializer):
-    """ Serializer to represent the Employee model """
+    """ Serializer to represent the CraweledItem """
 
     """
     Example: '{"crawl_job_uuid":"10a3a312-fc4b-4e87-b81a-f9cce65fb321",
@@ -88,3 +88,46 @@ class CrawledItemDetailSerializer(serializers.ModelSerializer):
         model = CrawledItem
         fields = ("id", "lake", "path", "directory", "size",
                   "last_modified", "owner", "last_crawl", "head_4k")
+
+
+class StructuredColumnSerializer(serializers.ModelSerializer):
+    """ Serializer to represent a Structured Column"""
+   
+    #type = serializers.ChoiceField(source="type", choices=StructuredColumn.TYPE_CHOICES)
+    #minimum = serializers.FloatField(source='min', required=False)
+    #maximum = serializers.FloatField(source='max', required=False)
+    #nullval = serializers.CharField(source='null', required=False)
+    #average = serializers.FloatField(source='avg', required=False)
+    path = serializers.StringRelatedField(required=False, source="crawled_item")
+
+    class Meta:
+        model = StructuredColumn
+        fields = (
+            "name", "crawled_item", "type",
+            "prec","min","max","avg","null","early","late","path")
+
+ #Custom field mappings since we can't use min/max/type in python as they are reserved keywords
+StructuredColumnSerializer._declared_fields["type"] = serializers.CharField(source="coltype")
+StructuredColumnSerializer._declared_fields["min"] = serializers.FloatField(source="minimum", required=False)
+StructuredColumnSerializer._declared_fields["max"] = serializers.FloatField(source="maximum", required=False)
+StructuredColumnSerializer._declared_fields["null"] = serializers.CharField(source="nullval", required=False)
+StructuredColumnSerializer._declared_fields["avg"] = serializers.FloatField(source="average", required=False)
+
+
+class TopicSerializer(serializers.ModelSerializer):
+    """ Serializer to represent a Topic"""
+    path = serializers.SlugRelatedField(read_only=True, slug_field="path", many=True, source="crawled_item")
+    class Meta:
+        model = Topic
+        fields = (
+            "topic_word", "crawled_item", "path")
+
+
+class KeywordSerializer(serializers.ModelSerializer):
+    """ Serializer to represent a Keyword"""
+    keyword = serializers.StringRelatedField()
+    path = serializers.StringRelatedField(required=False, source="crawled_item")
+
+    class Meta:
+        model = KeywordScore
+        fields = ("keyword", "score", "crawled_item", "path")

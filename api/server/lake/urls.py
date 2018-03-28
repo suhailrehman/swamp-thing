@@ -15,9 +15,7 @@ Including another URLconf
 """
 # from django.conf.urls import url, include
 from rest_framework.routers import DefaultRouter
-from lake.views import LakeViewSet
-from lake.views import CrawlJobViewSet, CrawledItemViewSet
-from lake.views import MetaViewSet
+from lake.views import *
 
 # Lake API Router
 
@@ -27,7 +25,11 @@ router = DefaultRouter()
 router.register(prefix='lakes', viewset=LakeViewSet)
 router.register(prefix='crawljobs', viewset=CrawlJobViewSet)
 router.register(prefix='crawleditems', viewset=CrawledItemViewSet)
+router.register(prefix='structuredcolumns', viewset=StructuredColumnViewSet)
+router.register(prefix='topics', viewset=TopicViewSet)
+router.register(prefix='keywords', viewset=KeywordViewSet)
 router.register(prefix='meta', base_name='meta', viewset=MetaViewSet)
+router.register(prefix='skluma', base_name='skluma', viewset=SklumaViewSet)
 
 urlpatterns = []
 urlpatterns += router.urls

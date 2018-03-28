@@ -1,0 +1,31 @@
+{% extends 'adminlte/lib/_main_sidebar.html' %}
+
+{% block user_panel %} {% endblock %}
+
+{% block nav_links %}
+    <li>
+        <a href="/dashboard/#">
+            <i class="fa fa-dashboard"></i> <span>Home</span>
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/lakes">
+            <i class="fa fa-cloud"></i> <span>Lake Configuration</span>
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/crawleditems">
+            <i class="fa fa-file"></i> <span>Search Crawled Items</span>
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/keywords">
+            <i class="fa fa-file-word-o"></i> <span>Search Keywords</span>
+        </a>
+    </li>
+    <li>
+        <a href="/api">
+            <i class="fa fa-code"></i> <span>Browsable API</span>
+        </a>
+    </li>
+{% endblock nav_links %}

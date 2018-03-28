@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^lakes$', LakeView.as_view(), name='lakes'),
     url(r'^crawleditems$', CrawledItemsView.as_view(), name='crawleditems'),
+    url(r'^keywords$', KeywordsView.as_view(), name='crawleditems'),
 ]

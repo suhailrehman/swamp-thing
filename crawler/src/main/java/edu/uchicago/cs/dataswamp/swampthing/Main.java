@@ -70,6 +70,8 @@ public class Main {
 	    channel.queueDeclare(props.getProperty("crawlQueueName"), false, false, false, null);
 	    channel.queueDeclare(props.getProperty("discoverQueueName"), false, false, false, null);
 		
+	    String bucketname=props.getProperty("s3bucket");
+	    String prefix=props.getProperty("s3prefix");
 	    
 	    logger.info("Listening for Incoming Crawl Jobs");
 	    
@@ -96,7 +98,14 @@ public class Main {
 	    		Crawler crawler = new Crawler(fs);
 	    		crawler.addExclusionPattern(Pattern.compile(spec.getExclusion_patterns()));
 	    		crawler.setLast_crawl(spec.uuid);
-
+	    		
+	    		
+	    		if(bucketname!=null)
+	    			crawler.setS3bucket(bucketname);
+	    		if(prefix!=null)
+	    			crawler.setS3prefix(prefix);
+				
+	    		
 	    		crawler.crawlTarget(spec);
 	    		
 				
@@ -104,10 +113,10 @@ public class Main {
 	    		//Send discovered items (files and directories) into discovered queue
 	    		for (CrawledItem item : crawler.getDiscoveredFiles()) {
 	    			logger.debug("Discovered New File: "+item.getPath());
-	    			item.get4khead(fs);
-	    			channel.basicPublish("", props.getProperty("discoverQueueName"), null, gson.toJson(item).getBytes());
+	    			//item.get4khead(fs);
+	    			//channel.basicPublish("", props.getProperty("discoverQueueName"), null, gson.toJson(item).getBytes());
 	    			
-	    		}
+	    		}	
 
 	    		if (spec.getCrawl_depth() > 0) {
 
@@ -141,7 +150,7 @@ public class Main {
 					return;
 				}
 				catch (Exception e) {
-					logger.error("Cannot Crawl Target: " + spec.root_uri);
+					logger.error("Cannot Crawl Target: " + spec.root_uri + " Exception:" + e.getMessage());
 				}
 				
 				

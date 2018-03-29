@@ -21,6 +21,8 @@ public class Crawler {
 	List<Path> crawlPaths;
 	List<Pattern> exclusionPatterns;
 	List<CrawledItem> discoveredItems = new ArrayList<CrawledItem>();
+	String s3bucket;
+	String s3prefix;
 	UUID last_crawl;
 	
 	public Crawler(FileSystem fs) {
@@ -44,6 +46,22 @@ public class Crawler {
 
 	public void setLast_crawl(UUID last_crawl) {
 		this.last_crawl = last_crawl;
+	}
+
+	public String getS3bucket() {
+		return s3bucket;
+	}
+
+	public void setS3bucket(String s3bucket) {
+		this.s3bucket = s3bucket;
+	}
+
+	public String getS3prefix() {
+		return s3prefix;
+	}
+
+	public void setS3prefix(String s3prefix) {
+		this.s3prefix = s3prefix;
 	}
 
 	public void addPath(Path path) {
@@ -102,7 +120,15 @@ public class Crawler {
 		for (FileStatus fileStatus : files) {
 				String fullPath = fileStatus.getPath().toString();
 				if (!checkStringMatch(fullPath)) {
-					CrawledItem item = new CrawledItem(this.filesystem, this.getLast_crawl(), jobspec.getLake(), fileStatus);
+					CrawledItem item;
+					if(this.s3bucket != null || !this.s3bucket.isEmpty())
+					{
+						item = new CrawledItem(this.filesystem, this.getLast_crawl(), jobspec.getLake(), fileStatus, this.s3bucket, this.s3prefix, true);
+					}
+					else
+					{
+						item = new CrawledItem(this.filesystem, this.getLast_crawl(), jobspec.getLake(), fileStatus);
+					}
 					this.discoveredItems.add(item);
 				}
 		}

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
@@ -47,18 +48,27 @@ public class CrawledItem {
 	@SuppressWarnings("unused")
 	private void copyFileToS3(String crawledPath, String bucketName, String keyPrefix, FileSystem fs, long size) throws IOException
 	{
-		InputStream is = fs.open(new Path(crawledPath));
+			InputStream is = fs.open(new Path(crawledPath));
 		
-	    FileSystem outputS3 = FileSystem.get(URI.create("s3a://"), fs.getConf());
-	    FSDataOutputStream outputStream = outputS3.create(new Path("s3a://"+bucketName+"/"+keyPrefix+"/"+this.path), true);
-	    
-	    try {
-	    	IOUtils.copyBytes(is, outputStream, fs.getConf());	
-	        IOUtils.copyBytes(is, outputStream, size, true);
-	    }
-	    finally {
-	      outputStream.close();
-	    }
+			String uriStr;	
+			
+			if(keyPrefix != null)
+				uriStr =  "s3a://"+bucketName+"/"+keyPrefix+"/"+URLEncoder.encode(this.path, "UTF-8");
+			else
+				uriStr =  "s3a://"+bucketName+"/"+URLEncoder.encode(this.path, "UTF-8");
+		
+			FileSystem outputS3 = FileSystem.get(URI.create(uriStr), fs.getConf());
+			FSDataOutputStream outputStream = outputS3.create(new Path(uriStr), true);
+
+			try {	
+		        IOUtils.copyBytes(is, outputStream, size, true);
+		    }
+		    finally {
+		      IOUtils.closeStream(outputStream);
+		      outputStream.close();
+		      is.close();
+		      outputS3.close();
+		    }
 	    
 	}
 	
@@ -117,16 +127,11 @@ public class CrawledItem {
 	}
 	
 	// Constructor that creates a full copy to S3 bucket - full/copy copies entire file 
-	public CrawledItem(FileSystem fs, FileStatus filestatus, String bucketName, String keyPrefix, boolean fullCopy)
+	public CrawledItem(FileSystem fs, UUID crawl_job_uuid, String lake, FileStatus fileStatus, String bucketName, String keyPrefix, boolean fullCopy)
 	{
-		super();
-		this.path = filestatus.getPath().toString();
-		this.size = filestatus.getLen();
-		this.directory = filestatus.isDirectory();
-		this.owner = filestatus.getOwner();
-		this.group = filestatus.getGroup();
-		this.last_modified = Date.from(Instant.ofEpochMilli(filestatus.getModificationTime()));
-		this.head_4k = null;
+		this(fs,fileStatus);
+		this.last_crawl = crawl_job_uuid;
+		this.lake = lake;
 		
 		if(!this.isDirectory())
 		{
@@ -135,9 +140,10 @@ public class CrawledItem {
 					copyFileToS3(this.path, bucketName, keyPrefix, fs, this.size);
 				else
 					copyFileToS3(this.path, bucketName, keyPrefix, fs, HEADER_SIZE);
-			} catch (IOException e) {
-				System.err.println("WARNING, unable to copy header contents of file: "+ this.path);
-				e.printStackTrace();
+			} catch (Exception e) {
+				logger.error("Unable to copy to S3. Exception: "+ e.getMessage());
+				//System.err.println("WARNING, unable to copy header contents of file: "+ this.path);
+				//e.printStackTrace();
 			}
 		}
 		

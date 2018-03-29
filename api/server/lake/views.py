@@ -119,11 +119,17 @@ class MetaViewSet(viewsets.ViewSet):
         except Exception:
             last_crawl = 'None'
         total_jobs = CrawlJob.objects.count()
+        total_keywords = Keyword.objects.count()
+        total_topics = Topic.objects.count()
+        total_columns = StructuredColumn.objects.count()
 
         return Response({'num_lakes': num_lakes,
                          'num_items': num_items,
                          'last_crawl': last_crawl,
-                         'total_jobs': total_jobs})
+                         'total_jobs': total_jobs,
+                         'total_columns': total_columns,
+                         'total_keywords': total_keywords,
+                         'total_topics': total_topics})
 
 
 class StructuredColumnViewSet(viewsets.ModelViewSet):
@@ -164,7 +170,7 @@ class SklumaViewSet(viewsets.ViewSet):
     parser_classes = (JSONParser,)
 
     def create(self, request):
-
+        errors = []
         print request.data
         data_object = request.data
 
@@ -196,43 +202,52 @@ class SklumaViewSet(viewsets.ViewSet):
                 serialized_column.save()
             else:
                 #TODO: Failure is an option, don't store column.
-                return Response({'success': 'false', 'error': 'Could not store column', 'col': column, 'errors': serialized_column.errors})
+                errors.append({'column_errors': serialized_column.errors})
+                #return Response({'success': 'false', 'error': 'Could not store column', 'col': column, 'errors': serialized_column.errors})
 
 
         #topics
-        topics = data_object['extractors']['ex_freetext']['topics']
-        for topic in topics:
-            try:
-                existing_topic = Topic.objects.get(topic_word=topic)
-                Topic.crawled_item.add(crawled_item.id)
-            except:
-                # New Topic
-                topic_object = {}
-                topic_object['topic_word'] = topic
-                topic_object['crawled_item'] = [crawled_item.id]
-                serialized_topic = TopicSerializer(data=topic_object)
-                if(serialized_topic.is_valid()):
-                    serialized_topic.save()
+        try:
+            topics = data_object['extractors']['ex_freetext']['topics']
+            for topic in topics:    
+                try:
+                    existing_topic = Topic.objects.get(topic_word=topic)
+                    Topic.crawled_item.add(crawled_item)
+                except:
+                    # New Topic
+                    topic_object = {}
+                    topic_object['topic_word'] = topic
+                    topic_object['crawled_item'] = [crawled_item.id]
+                    serialized_topic = TopicSerializer(data=topic_object)
+                    if(serialized_topic.is_valid()):
+                        serialized_topic.save()
                 else:
                     #TODO: Failure is an option, don't store column.
-                    return Response({'success': 'false', 'error': 'Could not store topic', 'topic': topic_object, 'errors': serialized_topic.errors})
-
+                    errors.append({'topic_errors': serialized_topic.errors})
+                    #return Response({'success': 'false', 'error': 'Could not store topic', 'topic': topic_object, 'errors': serialized_topic.errors})
+        except:
+            pass
         
         #keywords
-        keywords = data_object['extractors']['ex_freetext']['keywords']
-        for keyword, score in keywords.iteritems():
-            try:
-                existing_keyword = Keyword.objects.get(keyword=keyword)
-            except:
-                existing_keyword = Keyword(keyword=keyword)
-                existing_keyword.save()
+        try:
+            keywords = data_object['extractors']['ex_freetext']['keywords']
+            for keyword, score in keywords.iteritems():
+                try:
+                    existing_keyword = Keyword.objects.get(keyword=keyword)
+                except:
+                    existing_keyword = Keyword(keyword=keyword)
+                    existing_keyword.save()
 
-            try:
-                kwscore = KeywordScore(keyword=existing_keyword, score=score, crawled_item=crawled_item)
-                kwscore.save()
-            except Exception as e:
-                #TODO: Failure is an option, don't store column.
-                return Response({'success': 'false', 'error': 'Could not store keyword', 'keyword': keyword, 'errors': e})
+                try:
+                    kwscore = KeywordScore(keyword=existing_keyword, score=score, crawled_item=crawled_item)
+                    kwscore.save()
+                except Exception as e:
+                    #TODO: Failure is an option, don't store column.
+                    errors.append({'keyword_errors': e})
+                    #return Response({'success': 'false', 'error': 'Could not store keyword', 'keyword': keyword, 'errors': e})
+        except:
+            pass
         
-
+        if errors:
+            return Response({'success': 'partial', 'errors': errors})    
         return Response({'success': 'true'})

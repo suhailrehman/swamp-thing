@@ -56,6 +56,45 @@
 		</div>
 		<!-- /.info-box -->
 	</div>
+
+	<div class="col-md-3 col-sm-6 col-xs-12">
+		<div class="info-box">
+			<span class="info-box-icon bg-purple"><i class="fa fa-file-word-o"></i></span>
+
+			<div class="info-box-content">
+				<span class="info-box-text">Keywords Extracted</span>
+				<span id="keywords" class="info-box-number">-</span>
+			</div>
+			<!-- /.info-box-content -->
+		</div>
+		<!-- /.info-box -->
+	</div>
+
+	<div class="col-md-3 col-sm-6 col-xs-12">
+		<div class="info-box">
+			<span class="info-box-icon bg-purple"><i class="fa fa-comment"></i></span>
+
+			<div class="info-box-content">
+				<span class="info-box-text">Topics Extracted</span>
+				<span id="topics" class="info-box-number">-</span>
+			</div>
+			<!-- /.info-box-content -->
+		</div>
+		<!-- /.info-box -->
+	</div>
+
+	<div class="col-md-3 col-sm-6 col-xs-12">
+		<div class="info-box">
+			<span class="info-box-icon bg-purple"><i class="fa fa-table"></i></span>
+
+			<div class="info-box-content">
+				<span class="info-box-text">Structured Columns Extracted</span>
+				<span id="columns" class="info-box-number">-</span>
+			</div>
+			<!-- /.info-box-content -->
+		</div>
+		<!-- /.info-box -->
+	</div>
 	<!-- /.col -->
 </div><!-- End Widget Row -->
 
@@ -146,6 +185,9 @@ $.getJSON( "/api/meta", function( data ){
   $("#item_count").text(data["num_items"]);
   $("#last_crawl_time").text(data["last_crawl"]+" UTC");
   $("#crawl_jobs").text(data["total_jobs"]);
+  $("#keywords").text(data["total_keywords"]);
+  $("#topics").text(data["total_topics"]);
+  $("#columns").text(data["total_columns"]);
 });
 
 /* Load CrawlJob Table */

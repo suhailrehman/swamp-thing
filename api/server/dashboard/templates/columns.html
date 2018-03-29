@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 
-{% block page_name %}Keywords{% endblock %}
+{% block page_name %}Structured Columns{% endblock %}
 {% block content %}
 <div class="row">
 	<div class="col-xs-12">
 		<div class="box">
             <div class="box-header">
-              <h3 class="box-title">KeywordList</h3>
+              <h3 class="box-title">Structured Columns</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
               <table id="keywordstable" class="table table-bordered table-striped datatable responsive">
 		        <thead>
 		            <tr>
-		            	<th>Keyword</th>
-		                <th>Score</th>
+		            	<th>Column Name</th>
+		                <th>Type</th>
 		                <th>Path</th>
 		            </tr>
 		        </thead>
@@ -32,15 +32,15 @@
 
 {% block extra_foot %}
 <script>
-$.getJSON("/api/keywords/", function( dataset ) {
+$.getJSON("/api/structuredcolumns/", function( dataset ) {
  
 
     $('#keywordstable').DataTable({
         "data": dataset,
         "columns": [{
-            "data": "keyword"
+            "data": "name"
         }, {
-            "data": "score"
+            "data": "type"
         }, {
             "data": "path"
         },

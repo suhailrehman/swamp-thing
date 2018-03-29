@@ -35,6 +35,9 @@
 
 {% block extra_foot %}
 <script>
+
+//$(window).resize(function(){$('#crawleditemstable').resize();});
+
 $.getJSON("/api/crawleditems/", function( dataset ) {
  
 
@@ -59,7 +62,7 @@ $.getJSON("/api/crawleditems/", function( dataset ) {
       'searching'   : true,
       'ordering'    : true,
       'info'        : true,
-      'autoWidth'   : true,
+      'autoWidth'   : false,
       'responsive'  : true
     });
 });

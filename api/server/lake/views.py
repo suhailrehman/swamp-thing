@@ -151,6 +151,12 @@ class TopicViewSet(viewsets.ModelViewSet):
     search_fields = ('topic_word', 'crawled_item__path')
     ordering_fields = ('topic_word')
 
+    #Return wordcloud query
+    @list_route(methods=['get'])
+    def cloud(self, request):
+        queryset = self.get_queryset()
+        return Response({'cloud': [[str(q.topic_word), q.crawled_item.all().count()] for q in queryset]})
+
 
 class KeywordViewSet(viewsets.ModelViewSet):
     """ ViewSet for viewing and editing Keyword objects """
@@ -171,40 +177,55 @@ class SklumaViewSet(viewsets.ViewSet):
 
     def create(self, request):
         errors = []
+        num_cols = 0
+        num_keywords = 0
+        num_topics = 0
+
         print request.data
         data_object = request.data
 
         #top-level metadata
-        metadata = data_object['metadata']
-        file_path = metadata['file']['path']
+        try:
+            metadata = data_object['metadata']
+            file_path = metadata['file']['path']
+        except:
+            return Response({'success': 'false', 'error': 'Request does not contain valid metadata and file path objects.'})
+        
         #TODO Search for file path in catalog, or create if it doesnt exist
-        crawled_item = CrawledItem.objects.get(path=file_path)
+        try:
+            crawled_item = CrawledItem.objects.get(path=file_path)
+        except:
+            return Response({'success': 'false', 'error': 'No crawled files in catalog matching: '+file_path})
 
         #extractors
-        columns = data_object['extractors']['ex_structured']['cols']
 
-        #For each Column:
-        #TODO Handle already existing columns
-        for colname, colproperties in columns.iteritems():
-            
-            print "Adding colname"
-            column = {}
-            column['name'] = colname
-            column['crawled_item'] = crawled_item.id
+        try:
+            columns = data_object['extractors']['ex_structured']['cols']
 
-            #Copy over field properties
-            for prop, value in colproperties.iteritems():
-                column[prop] = value
+            #For each Column:
+            #TODO Handle already existing columns
+            for colname, colproperties in columns.iteritems():
+                
+                print "Adding colname"
+                column = {}
+                column['name'] = colname
+                column['crawled_item'] = crawled_item.id
 
-            #Hopefully the column serializes
-            serialized_column = StructuredColumnSerializer(data=column)
-            if(serialized_column.is_valid()):
-                serialized_column.save()
-            else:
-                #TODO: Failure is an option, don't store column.
-                errors.append({'column_errors': serialized_column.errors})
-                #return Response({'success': 'false', 'error': 'Could not store column', 'col': column, 'errors': serialized_column.errors})
+                #Copy over field properties
+                for prop, value in colproperties.iteritems():
+                    column[prop] = value
 
+                #Hopefully the column serializes
+                serialized_column = StructuredColumnSerializer(data=column)
+                if(serialized_column.is_valid()):
+                    serialized_column.save()
+                    num_cols += 1
+                else:
+                    #TODO: Failure is an option, don't store column.
+                    errors.append({'column': colname, 'column_errors': serialized_column.errors})
+                    #return Response({'success': 'false', 'error': 'Could not store column', 'col': column, 'errors': serialized_column.errors})
+        except:
+            pass
 
         #topics
         try:
@@ -221,9 +242,10 @@ class SklumaViewSet(viewsets.ViewSet):
                     serialized_topic = TopicSerializer(data=topic_object)
                     if(serialized_topic.is_valid()):
                         serialized_topic.save()
+                        num_topics += 1
                 else:
                     #TODO: Failure is an option, don't store column.
-                    errors.append({'topic_errors': serialized_topic.errors})
+                    errors.append({'topic': topic, 'topic_errors': serialized_topic.errors})
                     #return Response({'success': 'false', 'error': 'Could not store topic', 'topic': topic_object, 'errors': serialized_topic.errors})
         except:
             pass
@@ -241,13 +263,16 @@ class SklumaViewSet(viewsets.ViewSet):
                 try:
                     kwscore = KeywordScore(keyword=existing_keyword, score=score, crawled_item=crawled_item)
                     kwscore.save()
+                    num_keywords += 1
                 except Exception as e:
                     #TODO: Failure is an option, don't store column.
-                    errors.append({'keyword_errors': e})
+                    errors.append({'keyword': keyword, 'keyword_error': e})
                     #return Response({'success': 'false', 'error': 'Could not store keyword', 'keyword': keyword, 'errors': e})
         except:
             pass
+
+        added = {'number of colums': num_cols, 'number of topics': num_topics, 'number of keywords': num_keywords}
         
         if errors:
-            return Response({'success': 'partial', 'errors': errors})    
-        return Response({'success': 'true'})
+            return Response({'success': 'partial', 'added': added, 'errors': errors})    
+        return Response({'success': 'true', 'added': added})

@@ -43,3 +43,13 @@ class KeywordsView(TemplateView):
             'some_dynamic_value': 'This text comes from django view!',
         }
         return self.render_to_response(context)
+
+
+class ColumnsView(TemplateView):
+    template_name = 'columns.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'some_dynamic_value': 'This text comes from django view!',
+        }
+        return self.render_to_response(context)

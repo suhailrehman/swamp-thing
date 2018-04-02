@@ -92,31 +92,35 @@ class CrawledItemDetailSerializer(serializers.ModelSerializer):
 
 class StructuredColumnSerializer(serializers.ModelSerializer):
     """ Serializer to represent a Structured Column"""
-   
-    #type = serializers.ChoiceField(source="type", choices=StructuredColumn.TYPE_CHOICES)
-    #minimum = serializers.FloatField(source='min', required=False)
-    #maximum = serializers.FloatField(source='max', required=False)
-    #nullval = serializers.CharField(source='null', required=False)
-    #average = serializers.FloatField(source='avg', required=False)
-    path = serializers.StringRelatedField(required=False, source="crawled_item")
+    path = serializers.StringRelatedField(
+        required=False, source="crawled_item")
 
     class Meta:
         model = StructuredColumn
         fields = (
             "name", "crawled_item", "type",
-            "prec","min","max","avg","null","early","late","path")
+            "prec", "min", "max", "avg", "null", "early", "late", "path")
 
- #Custom field mappings since we can't use min/max/type in python as they are reserved keywords
-StructuredColumnSerializer._declared_fields["type"] = serializers.CharField(source="coltype")
-StructuredColumnSerializer._declared_fields["min"] = serializers.FloatField(source="minimum", required=False)
-StructuredColumnSerializer._declared_fields["max"] = serializers.FloatField(source="maximum", required=False)
-StructuredColumnSerializer._declared_fields["null"] = serializers.CharField(source="nullval", required=False)
-StructuredColumnSerializer._declared_fields["avg"] = serializers.FloatField(source="average", required=False)
+
+# Custom field mappings since we can't use min/max/type in python
+# as they are reserved keywords
+StructuredColumnSerializer._declared_fields["type"] = serializers.CharField(
+    source="coltype")
+StructuredColumnSerializer._declared_fields["min"] = serializers.FloatField(
+    source="minimum", required=False)
+StructuredColumnSerializer._declared_fields["max"] = serializers.FloatField(
+    source="maximum", required=False)
+StructuredColumnSerializer._declared_fields["null"] = serializers.CharField(
+    source="nullval", required=False)
+StructuredColumnSerializer._declared_fields["avg"] = serializers.FloatField(
+    source="average", required=False)
 
 
 class TopicSerializer(serializers.ModelSerializer):
     """ Serializer to represent a Topic"""
-    path = serializers.SlugRelatedField(read_only=True, slug_field="path", many=True, source="crawled_item")
+    path = serializers.SlugRelatedField(
+        read_only=True, slug_field="path", many=True, source="crawled_item")
+
     class Meta:
         model = Topic
         fields = (
@@ -126,7 +130,8 @@ class TopicSerializer(serializers.ModelSerializer):
 class KeywordSerializer(serializers.ModelSerializer):
     """ Serializer to represent a Keyword"""
     keyword = serializers.StringRelatedField()
-    path = serializers.StringRelatedField(required=False, source="crawled_item")
+    path = serializers.StringRelatedField(
+        required=False, source="crawled_item")
 
     class Meta:
         model = KeywordScore

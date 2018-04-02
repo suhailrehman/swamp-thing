@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
 from django.views.generic import TemplateView
 
 
@@ -47,6 +46,16 @@ class KeywordsView(TemplateView):
 
 class ColumnsView(TemplateView):
     template_name = 'columns.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'some_dynamic_value': 'This text comes from django view!',
+        }
+        return self.render_to_response(context)
+
+
+class TopicsView(TemplateView):
+    template_name = 'topics.html'
 
     def get(self, request, *args, **kwargs):
         context = {

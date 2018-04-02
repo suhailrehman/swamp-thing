@@ -76,7 +76,7 @@ class CrawledItem(models.Model):
     '''
 
     def __str__(self):
-        return str(self.path) + " (Lake: "+str(self.lake.name)+")"
+        return str(self.path) + " (Lake: " + str(self.lake.name) + ")"
 
 
 class StructuredColumn(models.Model):
@@ -90,7 +90,6 @@ class StructuredColumn(models.Model):
     nullval = models.CharField(max_length=settings.MAX_PATH_LEN, null=True)
     early = models.DateTimeField(null=True)
     late = models.DateTimeField(null=True)
-
 
     LATSTD = 'lat-std'
     LONSTD = 'lon-std'
@@ -106,7 +105,7 @@ class StructuredColumn(models.Model):
 
     TYPE_CHOICES = (
         (LATSTD, 'Latitude Standard'),
-        (LONSTD,'Longitude Standard'),
+        (LONSTD, 'Longitude Standard'),
         (LATEW, 'Latitude E/W'),
         (LONEW, 'Longitude E/W'),
         (INT, 'Integer'),
@@ -116,32 +115,33 @@ class StructuredColumn(models.Model):
         (NONE, 'None'),
         (UNKNOWN, 'Unknown Column'),
         (UUID, 'uuid')
-        )
+    )
 
     coltype = models.CharField(
         max_length=10,
         choices=TYPE_CHOICES,
         default=NONE,
     )
-    
+
     class Meta:
         unique_together = ('name', 'crawled_item')
 
 
 class Topic(models.Model):
-    topic_word = models.CharField(max_length=settings.MAX_PATH_LEN, unique=True)
+    topic_word = models.CharField(
+        max_length=settings.MAX_PATH_LEN, unique=True)
     crawled_item = models.ManyToManyField(CrawledItem, related_name="topics")
 
 
 class Keyword(models.Model):
     keyword = models.CharField(max_length=settings.MAX_PATH_LEN, unique=True)
-    
+
     def __str__(self):
-        return str(self.keyword)
+        return unicode(self.keyword)
 
 
 class KeywordScore(models.Model):
-    keyword = models.ForeignKey(Keyword, related_name="scores") 
+    keyword = models.ForeignKey(Keyword, related_name="scores")
     score = models.FloatField(null=True)
     crawled_item = models.ForeignKey(CrawledItem, related_name="keywordscores")
 

@@ -113,8 +113,8 @@ public class Main {
 	    		//Send discovered items (files and directories) into discovered queue
 	    		for (CrawledItem item : crawler.getDiscoveredFiles()) {
 	    			logger.debug("Discovered New File: "+item.getPath());
-	    			//item.get4khead(fs);
-	    			//channel.basicPublish("", props.getProperty("discoverQueueName"), null, gson.toJson(item).getBytes());
+	    			item.get4khead(fs);
+	    			channel.basicPublish("", props.getProperty("discoverQueueName"), null, gson.toJson(item).getBytes());
 	    			
 	    		}	
 

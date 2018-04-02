@@ -182,7 +182,7 @@
 	<div class="col-md-12">
 		<div class="box">
 			<div class="box-header with-border">
-				<h3 class="box-title">Topic Cloud</h3>
+				<h3 class="box-title">Keyword Cloud</h3>
 
 				<div class="box-tools pull-right">
 					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -207,7 +207,7 @@
 						<div class="col-md-12">
 							<div id="wc_surround" class="chart">
 								<!-- Sales Chart Canvas -->
-								<canvas id="wordcloud" style="height:230px"></canvas>
+								<canvas id="wordcloud" style="height:512px"></canvas>
 							</div>
 							<!-- /.chart-responsive -->
 						</div>
@@ -225,7 +225,7 @@
 {% block extra_foot %}
 <script type="text/javascript">
 
-$(window).resize(function(){location.reload();});
+///$(window).resize(function(){location.reload();});
 
 /* Load Metadata */
 $.getJSON( "/api/meta/", function( data ){
@@ -270,7 +270,7 @@ $.getJSON("/api/crawljobs/", function( dataset ) {
     $('#jobstable tbody').on( 'click', 'button', function () {
     	var uuid = table.row($(this).parents('tr')).data()['uuid'];
     	var jqxhr = $.post( "/api/crawljobs/"+uuid+"/start/", function() {
-    		alert( "Submitted" );
+    		console.log("Button Pressed");
     	})
     	.done(function() {
     		alert( "Job Pushed to Queue" );
@@ -279,7 +279,7 @@ $.getJSON("/api/crawljobs/", function( dataset ) {
     		alert( "Error from Server Pushing to Queue"+ data );
     	})
     	.always(function() {
-    		alert( "finished" );
+    		console.log("Handled Crawl Start Button Press");
     	});
     } );
 
@@ -316,32 +316,33 @@ $.getJSON( "/api/crawleditems/filetypes/?top=20", function( data ) {
 	});
 
 
-	$.getJSON( "/api/topics/cloud/", function( data ) {
+	$.getJSON( "/api/keywords/cloud/", function( data ) {
 
 		var div = document.getElementById("wc_surround");
 		var canvas = document.getElementById("wordcloud");
 		canvas.height = div.offsetHeight;
 		canvas.width  = div.offsetWidth;
 
-		function wordhover(item, dimension, event) {
+		/*function wordhover(item, dimension, event) {
 			console.log(item,dimension,event);
     	// Do stuff before send​
-		}
+		}*/
 
 		WordCloud(canvas, { 
 			  list: data['cloud'],
 			  gridSize: Math.round(16 * $('#wordcloud').width() / 1024),
 			  weightFactor: function (size) {
 			  	//console.log(Math.pow(size*2, 3) * $('#wordcloud').width() / 512);
-			    return Math.pow(size*3, 3) * $('#wordcloud').width() / 1024;
+			    //return Math.pow(size, 2) * $('#wordcloud').width() / 1024;
+			    return Math.pow(size*2, 1) * $('#wordcloud').width() / 1024;
 			  },
 			  fontFamily: 'Helvetica, sans-serif',
 			  /*color: function (word, weight) {
 			    return (weight === 12) ? '#f02222' : '#c09292';
 			  },*/
-			  rotateRatio: 0.5,
-			  rotationSteps: 2,
-			  hover: wordhover,
+			  rotateRatio: 0.75,
+			  rotationSteps: 5,
+			  //hover: wordhover,
 			} );
 
 	});

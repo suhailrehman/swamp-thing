@@ -49,7 +49,7 @@ public class CrawledItem {
 	private void copyFileToS3(String crawledPath, String bucketName, String keyPrefix, FileSystem fs, long size) throws IOException
 	{
 			InputStream is = fs.open(new Path(crawledPath));
-		
+			logger.info("Copying to S3: "+this.path);
 			String uriStr;	
 			
 			if(keyPrefix != null)

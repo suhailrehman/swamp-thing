@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block page_name %}Topics{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Topics</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table id="topicstable" class="table table-bordered table-striped datatable responsive">
+		        <thead>
+		            <tr>
+		            	<th>Topic</th>
+		                <th>Number of Crawled Files</th>
+                    <th>Details</th>
+		            </tr>
+		        </thead>
+                <tbody>
+
+		        </tbody>
+		      </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+	</div> <!-- .col -->
+</div> <!-- .row -->
+{% endblock %}
+
+
+{% block extra_foot %}
+<script>
+$.getJSON("/api/topics/summary/", function( dataset ) {
+ 
+
+    var table = $('#topicstable').DataTable({
+        "data": dataset,
+        "columns": [{
+            "data": "topic"
+        }, {
+            "data": "count"
+        },
+        {
+            "defaultContent": "<button>View Files</button>"
+        } 
+        ],
+        'paging'      : true,
+      'lengthChange': true,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : false,
+      'responsive'  : true
+    });
+
+    $('#topicstable tbody').on( 'click', 'button', function () {
+      var topic = table.row($(this).parents('tr')).data()['topic'];
+      window.open("/api/topics/"+topic, '_blank');
+    });
+
+});
+
+</script>
+{% endblock %}
+
+

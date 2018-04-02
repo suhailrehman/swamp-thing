@@ -87,9 +87,12 @@ The Datalake API is extensible and more items can be modelled with FQ relationsh
 
 ## Changelog
 
+### 04/01/2018
+* Completed Skluma Integration for CERES demo
+* Crawler supports S3 file export
+* Model update to store Skluma output
+* Supporting Code for visualization of Skluma output
+
 ### 03/01/2018
 * Added new branch ceres/demo_s18 for Skluma Integration
-* TODO: Treemap generation code added to utilities
-* TODO: Crawler supports S3 file export
-* TODO: Model update to store Skluma output
-* TODO: Supporting Code for visualization of Skluma output
+* Treemap generation code added to utilities

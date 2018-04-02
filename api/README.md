@@ -6,10 +6,10 @@
 - [x] Working API tree
 - [x] Queue Interaction
 - [ ] Crawl Job end detection / queue flushing
-- [ ] Documentation
+- [X] Documentation
 - [ ] Unit Tests
 - [ ] Production deployment and security settings
-- [ ] Lake specific Rabbit Queues
+- [X] Lake specific Rabbit Queues
 
 
 # Requirements

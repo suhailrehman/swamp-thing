@@ -1,0 +1,12 @@
+{% extends "rest_framework/base.html" %}
+
+{# Override this template in your own templates directory to customize #}
+{% load staticfiles %}
+
+{% block branding %}
+				<a href="#" class="navbar-left"><img src="{% static "rest_framework/img/dds1.png" %}" style="height: auto;
+    max-width: 100%;"></a>
+                <a class='navbar-brand' rel="nofollow" href='/'>
+                    Draining The Data Swamp
+                </a>
+{% endblock %}
